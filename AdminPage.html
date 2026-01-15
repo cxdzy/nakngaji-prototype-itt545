@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Control Panel - NakNgaji LMS</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Define the primary teal color inspired by NakNgaji */
+        :root {
+            --color-nakngaji-primary: #00A89D; /* A vibrant teal/green */
+            --color-nakngaji-light: #CCF0EE;
+        }
+
+        .bg-nakngaji-primary { background-color: var(--color-nakngaji-primary); }
+        .text-nakngaji-primary { color: var(--color-nakngaji-primary); }
+        .hover\:bg-nakngaji-dark:hover { background-color: #00877C; }
+        .bg-nakngaji-light { background-color: var(--color-nakngaji-light); }
+        .border-nakngaji-primary { border-color: var(--color-nakngaji-primary); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        /* Custom scrollbar for aesthetics */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        /* Hide all content views initially */
+        .content-view {
+            display: none;
+        }
+        /* Active nav item style */
+        .nav-active {
+            background-color: var(--color-nakngaji-light); 
+            color: var(--color-nakngaji-primary); 
+            font-weight: 600;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        /* Modal Overlay Styles */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col" onload="initDashboard()">
+
+    <!-- Header / Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Title -->
+                <div class="flex-shrink-0">
+                    <span class="text-2xl font-bold text-nakngaji-primary">NakNgaji</span>
+                    <span class="text-gray-500 text-sm ml-2">Admin Portal</span>
+                </div>
+                
+                <!-- User/Action Button with Dropdown -->
+                <div class="flex items-center space-x-4 relative">
+                    <span id="user-role-display" class="text-sm text-gray-700 hidden sm:block font-medium">System Administrator</span>
+                    
+                    <button id="profile-menu-button" onclick="toggleProfileMenu()" class="flex items-center justify-center p-2 rounded-full bg-nakngaji-primary text-white hover:bg-nakngaji-dark transition shadow-lg z-30">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="profile-menu" class="absolute right-0 top-12 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl hidden z-20">
+                        <div class="p-2">
+                            <p class="text-sm text-gray-500 px-3 py-1 border-b mb-1">Signed in as: Staff (Admin)</p>
+                            <a href="#" onclick="showView('ProfileView', 'nav-profile'); toggleProfileMenu(); return false;" class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition">
+                                <i data-lucide="user-cog" class="w-4 h-4 mr-2"></i> Manage Profile
+                            </a>
+                            <a href="#" onclick="mockSignOut()" class="flex items-center w-full px-3 py-2 mt-1 text-sm text-red-600 rounded-md hover:bg-red-50 transition">
+                                <i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="flex-1 max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8 pb-12 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- Sidebar / Menu -->
+            <aside class="lg:col-span-1 p-6 bg-white rounded-xl shadow-lg h-fit">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">Admin Tools</h3>
+                <nav class="space-y-2">
+                    <a href="#" id="nav-home" onclick="showView('HomeView', 'nav-home')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition shadow-sm">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
+                        Overview & KPIs
+                    </a>
+                    <a href="#" id="nav-users" onclick="showView('UserManagementView', 'nav-users')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition">
+                        <i data-lucide="users" class="w-5 h-5 mr-3"></i>
+                        Staff & User Management
+                    </a>
+                    <a href="#" id="nav-curriculum" onclick="showView('CurriculumView', 'nav-curriculum')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition">
+                        <i data-lucide="book-open" class="w-5 h-5 mr-3"></i>
+                        Curriculum Setup
+                    </a>
+                    <a href="#" id="nav-reports" onclick="showView('ReportingView', 'nav-reports')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 mr-3"></i>
+                        Reporting & Finance
+                    </a>
+                    <a href="#" id="nav-profile" onclick="showView('ProfileView', 'nav-profile')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition">
+                        <i data-lucide="user-cog" class="w-5 h-5 mr-3"></i>
+                        Admin Profile
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <section class="lg:col-span-3">
+                
+                <!-- 0. ADMIN HOME VIEW -->
+                <div id="HomeView" class="content-view p-8 bg-white rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">System Health & Overview</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="p-5 bg-nakngaji-light rounded-xl shadow-md">
+                            <p class="text-sm text-gray-600 font-medium">Active Students</p>
+                            <p class="text-3xl font-bold text-nakngaji-primary">184</p>
+                        </div>
+                        <div class="p-5 bg-white border rounded-xl shadow-md">
+                            <p class="text-sm text-gray-600 font-medium">Revenue (Monthly)</p>
+                            <p class="text-xl font-bold text-green-600">RM 45,670</p>
+                        </div>
+                        <div class="p-5 bg-white border rounded-xl shadow-md">
+                            <p class="text-sm text-gray-600 font-medium">Active Staff</p>
+                            <p class="text-3xl font-bold text-gray-800">22</p>
+                        </div>
+                        <div class="p-5 bg-white border rounded-xl shadow-md">
+                            <p class="text-sm text-gray-600 font-medium">New Enquiries</p>
+                            <p class="text-3xl font-bold text-gray-800">14</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Priority Notifications</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 border-l-4 border-red-500 bg-red-50 rounded-lg flex justify-between items-center">
+                            <p class="text-sm text-red-700 font-medium">3 Payment failures detected in automated billing cycles.</p>
+                            <button onclick="showView('ReportingView', 'nav-reports')" class="text-red-700 hover:underline text-sm font-bold">Audit</button>
+                        </div>
+                        <div class="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded-lg flex justify-between items-center">
+                            <p class="text-sm text-yellow-800 font-medium">New Tutor application pending for review: Ustaz Malik.</p>
+                            <button onclick="openUserModal('Ustaz Malik', 'malik@ustaz.com', 'Tutor')" class="text-yellow-800 hover:underline text-sm font-bold">Review</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. USER MANAGEMENT VIEW -->
+                <div id="UserManagementView" class="content-view p-8 bg-white rounded-xl shadow-lg">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4">
+                        <h2 class="text-3xl font-bold text-gray-800">Staff & User Management</h2>
+                        <button onclick="openUserModal()" class="mt-4 md:mt-0 bg-nakngaji-primary text-white font-semibold px-4 py-2 rounded-lg hover:opacity-90 shadow flex items-center transition">
+                            <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i> Add New Staff
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar border rounded-xl">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name / Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Ustaz Naqib <br> <span class="text-xs text-gray-500">naqib@nakngaji.com</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">Staff (Tutor)</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Active</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                        <button onclick="openUserModal('Ustaz Naqib', 'naqib@nakngaji.com', 'Tutor')" class="text-nakngaji-primary hover:underline">Edit</button>
+                                        <button class="text-red-500 hover:underline">Suspend</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Ahmad Kassim <br> <span class="text-xs text-gray-500">ahmad@user.com</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">User (Parent)</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Active</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                        <button onclick="openUserModal('Ahmad Kassim', 'ahmad@user.com', 'User')" class="text-nakngaji-primary hover:underline">Edit</button>
+                                        <button class="text-red-500 hover:underline">Reset Pwd</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. CURRICULUM SETUP VIEW -->
+                <div id="CurriculumView" class="content-view p-8 bg-white rounded-xl shadow-lg">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4">
+                        <h2 class="text-3xl font-bold text-gray-800">Curriculum Setup</h2>
+                        <button onclick="openProgramModal()" class="mt-4 md:mt-0 bg-nakngaji-primary text-white font-semibold px-4 py-2 rounded-lg hover:opacity-90 shadow flex items-center transition">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add New Program
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar border rounded-xl">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Program Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level Details</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Base Price (RM)</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">Foundational</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Iqra' 1 - 6</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-nakngaji-primary">150.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button onclick="openProgramModal('Foundational', 'Iqra\' 1 - 6', '150.00')" class="text-nakngaji-primary hover:underline">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">Al-Quran</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Tajwid & Taranum</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-nakngaji-primary">220.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button onclick="openProgramModal('Al-Quran', 'Tajwid & Taranum', '220.00')" class="text-nakngaji-primary hover:underline">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. REPORTING VIEW -->
+               <div id="ReportingView" class="content-view p-8 bg-white rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Reporting & Financial Audit</h2>
+
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Generate Reports</h3>
+
+                    <div class="p-6 bg-nakngaji-light rounded-xl shadow-inner mb-6">
+                        <h4 class="text-lg font-bold text-nakngaji-primary mb-4">Report Builder</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
+                                <select class="w-full p-2 border border-gray-300 rounded-lg">
+                                    <option>Revenue Summary (Monthly)</option>
+                                    <option>Tutor Commission Payments</option>
+                                    <option>Enrollment Trends</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                <input type="date" class="w-full p-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                <input type="date" class="w-full p-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button onclick="mockAlert('Generating Report: Revenue Summary Q4...')" class="bg-nakngaji-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-nakngaji-dark transition flex items-center">
+                                <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Generate Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Audit Log</h3>
+                    
+                    <div class="p-5 bg-white border rounded-xl shadow-inner">
+                        <ul class="text-sm space-y-2 text-gray-700">
+                            <li class="border-b pb-1">
+                                <span class="font-medium text-red-600">[Error]</span> Payment Gateway API connection failed (10:30 AM).
+                            </li>
+                            <li class="border-b pb-1">
+                                <span class="font-medium text-green-600">[Success]</span> New Tutor 'Ustaz Malik' approved by Admin (09:45 AM).
+                            </li>
+                            <li>
+                                <span class="font-medium text-gray-500">[Activity]</span> Curriculum 'Fardu Ain' price updated to RM 180.00 (08:15 AM).
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+
+                <!-- 4. PROFILE VIEW -->
+                <div id="ProfileView" class="content-view p-8 bg-white rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Admin Profile</h2>
+                    <form class="space-y-4 max-w-lg">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Display Name</label>
+                            <input type="text" value="System Administrator" class="mt-1 w-full p-2 border rounded-lg focus:ring-nakngaji-primary outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Contact Email</label>
+                            <input type="email" value="admin@nakngaji.com" class="mt-1 w-full p-2 border rounded-lg focus:ring-nakngaji-primary outline-none">
+                        </div>
+                        <button class="bg-nakngaji-primary text-white font-bold py-2 px-6 rounded-lg shadow hover:opacity-90">Save Profile</button>
+                    </form>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL: STAFF & USER MANAGEMENT WINDOW -->
+    <div id="userModal" class="hidden fixed inset-0 z-50 overflow-y-auto modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-300">
+            <div class="flex justify-between items-center p-6 border-b">
+                <h3 id="userModalTitle" class="text-xl font-bold text-gray-800">Add New Staff Member</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600 transition"><i data-lucide="x"></i></button>
+            </div>
+            <form class="p-6 space-y-4" onsubmit="handleFormSubmit(event, 'Profile saved successfully!')">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input type="text" id="m_user_name" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-nakngaji-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="m_user_email" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-nakngaji-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Account Role</label>
+                    <select id="m_user_role" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-nakngaji-primary outline-none bg-white">
+                        <option value="Tutor">Staff (Tutor)</option>
+                        <option value="Admin">Staff (Admin)</option>
+                        <option value="User">User (Parent)</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex justify-end space-x-3">
+                    <button type="button" onclick="closeModals()" class="px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2 bg-nakngaji-primary text-white font-bold rounded-lg hover:opacity-90 shadow transition">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CURRICULUM SETUP WINDOW -->
+    <div id="programModal" class="hidden fixed inset-0 z-50 overflow-y-auto modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-300">
+            <div class="flex justify-between items-center p-6 border-b">
+                <h3 id="programModalTitle" class="text-xl font-bold text-gray-800">Add New Program</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600 transition"><i data-lucide="x"></i></button>
+            </div>
+            <form class="p-6 space-y-4" onsubmit="handleFormSubmit(event, 'Curriculum data updated!')">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Program Name</label>
+                    <input type="text" id="m_prog_name" placeholder="e.g. Al-Quran Advanced" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-nakngaji-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Level / Syllabus Details</label>
+                    <input type="text" id="m_prog_details" placeholder="e.g. Surah Al-Baqarah to An-Nisa'" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-nakngaji-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Monthly Base Price (RM)</label>
+                    <input type="number" step="0.01" id="m_prog_price" placeholder="250.00" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-nakngaji-primary outline-none">
+                </div>
+                <div class="pt-4 flex justify-end space-x-3">
+                    <button type="button" onclick="closeModals()" class="px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2 bg-nakngaji-primary text-white font-bold rounded-lg hover:opacity-90 shadow transition">Save Program</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto text-center text-sm px-4">
+            &copy; 2024 NakNgaji Booking System. Developed by 4GL Team.
+        </div>
+    </footer>
+
+    <script>
+        // MOCK FUNCTION: Replaces alert() for a better UX
+        function mockAlert(message) {
+            window.alert(message);
+        }
+
+        // NAVIGATION LOGIC
+        function showView(viewId, navId) {
+            document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('nav-active'));
+            const view = document.getElementById(viewId);
+            const nav = document.getElementById(navId);
+            if (view) view.style.display = 'block';
+            if (nav) nav.classList.add('nav-active');
+            lucide.createIcons();
+        }
+
+        // MODAL LOGIC: USER
+        function openUserModal(name = '', email = '', role = 'Tutor') {
+            document.getElementById('userModal').classList.remove('hidden');
+            document.getElementById('m_user_name').value = name;
+            document.getElementById('m_user_email').value = email;
+            document.getElementById('m_user_role').value = role;
+            document.getElementById('userModalTitle').innerText = name ? 'Edit User Profile' : 'Add New Staff Member';
+            lucide.createIcons();
+        }
+
+        // MODAL LOGIC: PROGRAM
+        function openProgramModal(name = '', details = '', price = '') {
+            document.getElementById('programModal').classList.remove('hidden');
+            document.getElementById('m_prog_name').value = name;
+            document.getElementById('m_prog_details').value = details;
+            document.getElementById('m_prog_price').value = price;
+            document.getElementById('programModalTitle').innerText = name ? 'Edit Program Details' : 'Add New Program';
+            lucide.createIcons();
+        }
+
+        function closeModals() {
+            document.getElementById('userModal').classList.add('hidden');
+            document.getElementById('programModal').classList.add('hidden');
+        }
+
+        function handleFormSubmit(e, message) {
+            e.preventDefault();
+            mockAlert(message);
+            closeModals();
+        }
+
+        function toggleProfileMenu() {
+            document.getElementById('profile-menu').classList.toggle('hidden');
+        }
+
+        function mockSignOut() {
+            if (confirm("Are you sure you want to sign out?")) {
+                window.location.href = 'LoginPage.html'; 
+            }
+        }
+
+        function initDashboard() {
+            lucide.createIcons();
+            showView('HomeView', 'nav-home');
+        }
+    </script>
+</body>
+</html>

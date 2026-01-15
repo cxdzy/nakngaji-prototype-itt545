@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - NakNgaji LMS</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Define the primary teal color inspired by NakNgaji */
+        :root {
+            --color-nakngaji-primary: #00A89D; /* A vibrant teal/green */
+            --color-nakngaji-light: #CCF0EE;
+        }
+
+        .bg-nakngaji-primary { background-color: var(--color-nakngaji-primary); }
+        .text-nakngaji-primary { color: var(--color-nakngaji-primary); }
+        .border-nakngaji-primary { border-color: var(--color-nakngaji-primary); }
+        .ring-nakngaji-primary:focus {
+             --tw-ring-color: var(--color-nakngaji-primary);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body onload="lucide.createIcons()">
+
+    <div class="w-full max-w-lg bg-white p-8 md:p-10 rounded-xl shadow-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-nakngaji-primary mb-2">
+                Register Account
+            </h1>
+            <p class="text-gray-600 text-lg">Create your Parent/Student profile</p>
+        </div>
+
+        <form id="registrationForm" class="space-y-6">
+            
+            <!-- Full Name Field -->
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <div class="relative">
+                    <i data-lucide="user" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                    <input type="text" id="name" required placeholder="Ahmad bin Kassim"
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ring-nakngaji-primary focus:border-nakngaji-primary transition duration-150" />
+                </div>
+            </div>
+
+            <!-- Email Field -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <div class="relative">
+                    <i data-lucide="mail" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                    <input type="email" id="email" required placeholder="name@example.com"
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ring-nakngaji-primary focus:border-nakngaji-primary transition duration-150" />
+                </div>
+            </div>
+            
+            <!-- Phone Field -->
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number (for reminders)</label>
+                <div class="relative">
+                    <i data-lucide="phone" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                    <input type="text" id="phone" required placeholder="+60123456789"
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ring-nakngaji-primary focus:border-nakngaji-primary transition duration-150" />
+                </div>
+            </div>
+
+            <!-- Password Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                        <input type="password" id="password" required placeholder="••••••••"
+                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ring-nakngaji-primary focus:border-nakngaji-primary transition duration-150" />
+                    </div>
+                </div>
+                <div>
+                    <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock-open" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                        <input type="password" id="confirm-password" required placeholder="••••••••"
+                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ring-nakngaji-primary focus:border-nakngaji-primary transition duration-150" />
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Register Button -->
+            <button type="submit"
+                    class="w-full bg-nakngaji-primary text-white font-semibold py-3 rounded-xl hover:bg-nakngaji-dark transition duration-200 shadow-lg flex items-center justify-center space-x-2 mt-8">
+                <i data-lucide="user-plus" class="w-5 h-5"></i>
+                <span>Register Account</span>
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm text-gray-600">
+            Already have an account? 
+            <a href="LoginPage.html" class="font-semibold text-nakngaji-primary hover:underline">Sign In Here</a>
+        </div>
+        
+        <!-- Mock Alert Box -->
+        <div id="mock-alert" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-nakngaji-primary text-white p-3 rounded-lg shadow-xl text-center z-50 transition duration-300 ease-in-out"></div>
+
+    </div>
+
+    <script>
+        // MOCK FUNCTION: Replaces alert() for a better UX
+        function mockAlert(message) {
+            const alertBox = document.getElementById('mock-alert');
+            alertBox.textContent = message;
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 3000);
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                mockAlert("Passwords do not match.");
+                return;
+            }
+
+            mockAlert("Registration successful! Redirecting to login...");
+            // In a real app, this would submit data and then redirect.
+            setTimeout(() => {
+                 window.location.href = 'LoginPage.html';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
