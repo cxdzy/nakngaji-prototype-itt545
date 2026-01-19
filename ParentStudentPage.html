@@ -199,7 +199,7 @@
                         <div class="p-6 bg-nakngaji-light rounded-2xl shadow-sm flex items-center space-x-4 border border-nakngaji-primary/20">
                             <i data-lucide="award" class="w-10 h-10 text-nakngaji-primary"></i>
                             <div>
-                                <p class="text-[10px] font-black text-nakngaji-primary uppercase tracking-widest">Active Students</p>
+                                <p class="text-[10px] font-black text-nakngaji-primary uppercase tracking-widest">Active Students Linked</p>
                                 <p id="home-child-count" class="text-3xl font-black text-gray-800">2 Children</p>
                             </div>
                         </div>
@@ -213,15 +213,15 @@
                     </div>
 
                     <h3 class="text-xl font-bold mb-4 text-gray-800 border-l-4 border-nakngaji-primary pl-4 tracking-tighter">Quick Summary</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-5 bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:scale-[1.02] duration-300">
+                    <div id="home-summary-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:scale-[1.02] duration-300" data-student="Ahmad Zaki">
                             <div>
                                 <p class="font-black text-gray-900 text-lg">Ahmad Zaki</p>
                                 <p class="text-xs font-bold text-nakngaji-primary uppercase tracking-tighter">Level: Iqra' 4</p>
                             </div>
                             <button onclick="showView('ProgressView', 'nav-progress')" class="text-[10px] font-black bg-nakngaji-primary text-white px-4 py-2 rounded-xl uppercase tracking-widest shadow-md">View Log</button>
                         </div>
-                        <div class="p-5 bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:scale-[1.02] duration-300">
+                        <div class="p-5 bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:scale-[1.02] duration-300" data-student="Siti Aminah">
                             <div>
                                 <p class="font-black text-gray-900 text-lg">Siti Aminah</p>
                                 <p class="text-xs font-bold text-nakngaji-primary uppercase tracking-tighter">Level: Iqra' 2</p>
@@ -285,7 +285,7 @@
                     <div class="overflow-x-auto border-2 border-gray-100 rounded-3xl shadow-sm bg-white overflow-hidden">
                         <table class="min-w-full divide-y divide-gray-100">
                             <thead>
-                                <tr class="bg-white"> <!-- UPDATED: Header is white now -->
+                                <tr class="bg-white">
                                     <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest border-r">Time</th>
                                     <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Mon</th>
                                     <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Tue</th>
@@ -294,7 +294,7 @@
                                     <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Fri</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50 bg-white"> <!-- UPDATED: All rows white -->
+                            <tbody class="divide-y divide-gray-50 bg-white">
                                 <tr>
                                     <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">9:00 AM</td>
                                     <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 9 AM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
@@ -304,52 +304,12 @@
                                     <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
                                 </tr>
                                 <tr>
-                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">10:00 AM</td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 10 AM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Wed, 10 AM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 10 AM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">11:00 AM</td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 11 AM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 11 AM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 11 AM, Ustazah Ameen', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">2:00 PM</td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 2 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 2 PM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 2 PM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">4:00 PM</td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 4 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Wed, 4 PM, Ustazah Ameen', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 4 PM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">8:00 PM</td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 9:00 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 9:00 PM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 9:00 PM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 9:00 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">9:00 PM</td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 9:00 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 9:00 PM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 9:00 PM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
-                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 9:00 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-6 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">8:00 PM</td>
+                                    <td class="px-6 py-6 whitespace-nowrap"><button onclick="highlightSlot('Mon, 8:00 PM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-4 py-2 rounded-xl shadow-lg font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-6 whitespace-nowrap"><span class="text-[10px] text-red-400 font-black uppercase italic tracking-tighter opacity-50">Not Available</span></td>
+                                    <td class="px-6 py-6 whitespace-nowrap"><button onclick="highlightSlot('Wed, 8:00 PM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-4 py-2 rounded-xl shadow-lg font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-6 whitespace-nowrap"><button onclick="highlightSlot('Thu, 8:00 PM, Ustazah Ameen', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-4 py-2 rounded-xl shadow-lg font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-6 whitespace-nowrap"><span class="text-[10px] text-red-400 font-black uppercase italic tracking-tighter opacity-50">Not Available</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -424,7 +384,7 @@
 
                 <!-- 2. STUDENT PROGRESS VIEW -->
                 <div id="ProgressView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">Learning Milestones</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter text-center lg:text-left">Learning Milestones</h2>
                     
                     <div class="mb-10 p-8 bg-gray-50 rounded-[2.5rem] border-2 border-gray-100 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 shadow-inner">
                         <div class="flex items-center space-x-3">
@@ -444,7 +404,7 @@
 
                 <!-- 3. PAYMENT HISTORY VIEW -->
                 <div id="PaymentHistoryView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">Transaction History</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter text-center lg:text-left">Transaction History</h2>
                     <div class="overflow-x-auto border-2 border-gray-50 rounded-[2rem] shadow-sm overflow-hidden">
                         <table class="min-w-full divide-y divide-gray-100">
                             <thead class="bg-gray-50">
@@ -505,7 +465,7 @@
 
                             <div id="child-list" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <!-- Child 1 -->
-                                <div class="flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group">
+                                <div class="flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group relative overflow-hidden">
                                     <div class="flex items-center space-x-5">
                                         <div class="bg-nakngaji-light p-5 rounded-[1.5rem] text-nakngaji-primary font-black shadow-inner text-xl">AZ</div>
                                         <div>
@@ -513,10 +473,10 @@
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70">Status: Level 4 Foundational</p>
                                         </div>
                                     </div>
-                                    <button class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                                    <button onclick="removeChild(this)" class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
                                 </div>
                                 <!-- Child 2 -->
-                                <div class="flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group">
+                                <div class="flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group relative overflow-hidden">
                                     <div class="flex items-center space-x-5">
                                         <div class="bg-nakngaji-light p-5 rounded-[1.5rem] text-nakngaji-primary font-black shadow-inner text-xl">SA</div>
                                         <div>
@@ -524,7 +484,7 @@
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70">Status: Level 2 Foundational</p>
                                         </div>
                                     </div>
-                                    <button class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                                    <button onclick="removeChild(this)" class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
                                 </div>
                             </div>
 
@@ -556,7 +516,7 @@
 
                         <!-- Security Section -->
                         <section>
-                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center tracking-tighter">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center tracking-tighter text-center lg:text-left">
                                 <i data-lucide="shield-check" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Account Security
                             </h3>
                             <div class="p-10 bg-white rounded-[3rem] border-2 border-gray-100 shadow-sm flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 transition hover:shadow-md">
@@ -582,7 +542,7 @@
                 <span class="w-1.5 h-1.5 bg-gray-700 rounded-full"></span>
                 <span class="text-[10px] uppercase font-black tracking-[0.5em] text-gray-500">Global Learning Portal</span>
             </div>
-            <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">&copy; 2024 Developed by 4GL Team. Empowering Quranic Literacy Worldwide.</p>
+            <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">&copy; 2024 Developed by 4GL Team for Global Quranic Literacy.</p>
         </div>
     </footer>
 
@@ -739,8 +699,16 @@
             const list = document.getElementById('child-list');
             const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             const div = document.createElement('div');
-            div.className = "flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group animate-in fade-in slide-in-from-bottom-4 duration-500";
-            div.innerHTML = `<div class="flex items-center space-x-5"><div class="bg-nakngaji-light p-5 rounded-[1.5rem] text-nakngaji-primary font-black shadow-inner text-xl">${initials}</div><div><p class="font-black text-gray-800 text-2xl tracking-tighter">${name}</p><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70">Status: Registered (${level})</p></div></div><button class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>`;
+            div.className = "flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group animate-in fade-in slide-in-from-bottom-4 duration-500 relative overflow-hidden";
+            div.innerHTML = `
+                <div class="flex items-center space-x-5">
+                    <div class="bg-nakngaji-light p-5 rounded-[1.5rem] text-nakngaji-primary font-black shadow-inner text-xl">${initials}</div>
+                    <div>
+                        <p class="font-black text-gray-800 text-2xl tracking-tighter">${name}</p>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70">Status: Registered (${level})</p>
+                    </div>
+                </div>
+                <button onclick="removeChild(this)" class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>`;
             list.appendChild(div);
             
             // Show Success Notification
@@ -752,7 +720,7 @@
             if(progSelector && bookSelector) {
                 [progSelector, bookSelector].forEach(s => {
                     const opt = document.createElement('option');
-                    opt.value = name.toLowerCase().replace(/\s/g, '');
+                    opt.value = name;
                     opt.text = name;
                     s.add(opt);
                 });
@@ -761,17 +729,59 @@
             nameInput.value = '';
             toggleAddChildForm();
             lucide.createIcons();
+            updateUIVariables();
+        }
+
+        function removeChild(btn) {
+            const card = btn.closest('.group');
+            const name = card.querySelector('p.font-black').innerText;
+            
+            if (confirm(`Unlink ${name} from your profile? This action cannot be undone.`)) {
+                card.classList.add('animate-out', 'fade-out', 'zoom-out', 'duration-300');
+                
+                setTimeout(() => {
+                    card.remove();
+                    updateUIVariables();
+                    
+                    // Remove from selectors
+                    const selectors = [document.getElementById('child-progress-selector'), document.getElementById('booking-child-selector')];
+                    selectors.forEach(sel => {
+                        for (let i = 0; i < sel.options.length; i++) {
+                            if (sel.options[i].text === name) {
+                                sel.remove(i);
+                                break;
+                            }
+                        }
+                    });
+                    
+                    // Update Home Quick Summary list
+                    const summaryList = document.getElementById('home-summary-list');
+                    const summaries = summaryList.querySelectorAll('[data-student]');
+                    summaries.forEach(s => {
+                        if (s.getAttribute('data-student') === name) s.remove();
+                    });
+
+                    showProcessSuccess("Student Removed", `${name} has been successfully unlinked. Update completed.`);
+                }, 300);
+            }
+        }
+
+        function updateUIVariables() {
+            const list = document.getElementById('child-list');
             const currentCount = list.children.length;
-            document.getElementById('home-child-count').innerText = currentCount + " Children";
+            document.getElementById('home-child-count').innerText = currentCount + (currentCount === 1 ? " Child" : " Children");
         }
 
         function updateProgressContent() {
             const childId = document.getElementById('child-progress-selector').value;
             const container = document.getElementById('progress-container');
-            if (childId === 'zaki') {
+            // Mock content logic
+            if (childId === 'zaki' || childId === 'Ahmad Zaki') {
                 container.innerHTML = `<div class="p-10 border-l-[12px] border-nakngaji-primary bg-gray-50 rounded-[3rem] shadow-sm transition hover:shadow-xl"><div class="flex justify-between items-start mb-6"><div><h4 class="font-black text-gray-900 text-3xl tracking-tighter">Ahmad Zaki</h4><p class="text-[10px] font-black text-nakngaji-primary uppercase tracking-[0.25em] mt-2">Syllabus: Iqra' 4 (Session ID: 4492)</p></div><span class="text-[10px] bg-nakngaji-light text-nakngaji-primary font-black px-5 py-2 rounded-2xl border border-nakngaji-primary/10">15 OCT 2024</span></div><p class="text-gray-600 leading-relaxed font-bold italic text-xl tracking-tighter">"Ahmad is showing great focus on Mad rules. Successfully completed Page 22. Practice double vowels at home to maintain rhythm."</p><div class="mt-10 flex items-center text-[10px] text-gray-400 font-black border-t border-gray-200 pt-6 uppercase tracking-widest"><i data-lucide="user-check" class="w-4 h-4 mr-2 text-nakngaji-primary"></i> Validated by: Ustazah Zarith</div></div>`;
-            } else {
+            } else if (childId === 'aminah' || childId === 'Siti Aminah') {
                 container.innerHTML = `<div class="p-10 border-l-[12px] border-nakngaji-primary bg-gray-50 rounded-[3rem] shadow-sm transition hover:shadow-xl"><div class="flex justify-between items-start mb-6"><div><h4 class="font-black text-gray-900 text-3xl tracking-tighter">Siti Aminah</h4><p class="text-[10px] font-black text-nakngaji-primary uppercase tracking-[0.25em] mt-2">Syllabus: Iqra' 2 (Session ID: 5122)</p></div><span class="text-[10px] bg-nakngaji-light text-nakngaji-primary font-black px-5 py-2 rounded-2xl border border-nakngaji-primary/10">12 OCT 2024</span></div><p class="text-gray-600 leading-relaxed font-bold italic text-xl tracking-tighter">"Aminah has successfully mastered letter recognition for 'Kha'. We will be starting Page 5 next session."</p><div class="mt-10 flex items-center text-[10px] text-gray-400 font-black border-t border-gray-200 pt-6 uppercase tracking-widest"><i data-lucide="user-check" class="w-4 h-4 mr-2 text-nakngaji-primary"></i> Validated by: Ustaz Naqib</div></div>`;
+            } else {
+                container.innerHTML = `<div class="p-10 text-center border-2 border-dashed border-gray-200 rounded-[3rem]"><i data-lucide="inbox" class="w-12 h-12 text-gray-200 mx-auto mb-4"></i><p class="font-black text-gray-400 uppercase tracking-widest text-xs">No progress logs found for this student yet.</p></div>`;
             }
             lucide.createIcons();
         }
