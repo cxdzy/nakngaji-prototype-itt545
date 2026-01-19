@@ -489,55 +489,90 @@
                 <!-- ---------------------------------------------------------------------------------- -->
                 <!-- 4. MANAGE PROFILE VIEW -->
                 <!-- ---------------------------------------------------------------------------------- -->
-                <div id="ProfileView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Manage Profile & Contact Details</h2>
+              <div id="ProfileView" class="content-view p-8 bg-white rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-8">Manage Profile & Account</h2>
 
-                    <form class="space-y-6">
-                        <h3 class="text-xl font-semibold text-gray-800">Parent/Guardian Information</h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                <input type="text" id="name" value="Ahmad bin Kassim" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
+                    <div class="space-y-10">
+                        <!-- 1. Parent Data -->
+                        <section>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                <i data-lucide="user-check" class="text-nakngaji-primary mr-2"></i> Parent Information
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-gray-50 rounded-2xl border">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Full Name</label>
+                                    <input type="text" value="Ahmad bin Kassim" class="w-full mt-1 p-2 border-b bg-transparent outline-none focus:border-nakngaji-primary transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Phone Number</label>
+                                    <input type="text" value="+60123456789" class="w-full mt-1 p-2 border-b bg-transparent outline-none focus:border-nakngaji-primary transition">
+                                </div>
                             </div>
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                <input type="email" id="email" value="ahmad.kassim@email.com" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
-                            </div>
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number (for SMS/WhatsApp)</label>
-                                <input type="text" id="phone" value="+60123456789" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
-                            </div>
-                            <div>
-                                <label for="address" class="block text-sm font-medium text-gray-700">City / Location</label>
-                                <input type="text" id="address" value="Shah Alam, Selangor" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
-                            </div>
-                        </div>
+                        </section>
 
-                        <h3 class="text-xl font-semibold pt-4 text-gray-800 border-t">Change Password</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
-                                <input type="password" id="current-password" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
+                        <!-- 2. Children Management (NEW) -->
+                        <section>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                    <i data-lucide="users" class="text-nakngaji-primary mr-2"></i> Linked Children
+                                </h3>
+                                <button onclick="toggleAddChildForm()" class="bg-nakngaji-primary text-white font-bold py-1.5 px-4 rounded-lg shadow-md hover:bg-nakngaji-dark transition text-sm flex items-center">
+                                    <i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i> Add More Child
+                                </button>
                             </div>
-                            <div>
-                                <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
-                                <input type="password" id="new-password" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
+
+                            <!-- List of current children -->
+                            <div id="child-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-center justify-between p-4 border rounded-xl bg-white hover:border-nakngaji-primary transition group shadow-sm">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="bg-nakngaji-light p-2 rounded-lg"><i data-lucide="smile" class="text-nakngaji-primary w-5 h-5"></i></div>
+                                        <div>
+                                            <p class="font-bold text-gray-800">Ahmad Zaki</p>
+                                            <p class="text-xs text-gray-500 italic">Iqra' Foundational</p>
+                                        </div>
+                                    </div>
+                                    <button class="text-gray-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                                <div class="flex items-center justify-between p-4 border rounded-xl bg-white hover:border-nakngaji-primary transition group shadow-sm">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="bg-nakngaji-light p-2 rounded-lg"><i data-lucide="smile" class="text-nakngaji-primary w-5 h-5"></i></div>
+                                        <div>
+                                            <p class="font-bold text-gray-800">Siti Aminah</p>
+                                            <p class="text-xs text-gray-500 italic">Al-Quran & Tajwid</p>
+                                        </div>
+                                    </div>
+                                    <button class="text-gray-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="pt-4 border-t flex justify-end">
-                            <button type="submit" class="bg-nakngaji-primary text-white font-semibold py-2 px-6 rounded-xl shadow-lg hover:bg-nakngaji-dark transition duration-150 ease-in-out">
-                                Save Profile Changes
-                            </button>
-                        </div>
-                    </form>
+
+                            <!-- Hidden Form to Add New Child -->
+                            <div id="add-child-form" class="mt-6 hidden p-6 border-2 border-dashed border-nakngaji-primary rounded-2xl bg-nakngaji-light/10">
+                                <h4 class="font-bold text-gray-700 mb-4">Register New Student</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" id="new-child-name" placeholder="Enter Child's Name" class="p-2 border rounded-lg focus:ring-2 ring-nakngaji-primary outline-none">
+                                    <select id="new-child-level" class="p-2 border rounded-lg focus:ring-2 ring-nakngaji-primary outline-none bg-white">
+                                        <option value="Iqra'">Iqra' (Foundational)</option>
+                                        <option value="Quran">Al-Quran & Tajwid</option>
+                                    </select>
+                                </div>
+                                <div class="mt-4 flex space-x-2">
+                                    <button onclick="confirmAddChild()" class="bg-nakngaji-primary text-white px-6 py-2 rounded-lg font-bold shadow transition">Add to Account</button>
+                                    <button onclick="toggleAddChildForm()" class="bg-gray-400 text-white px-6 py-2 rounded-lg font-bold shadow transition">Cancel</button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- 3. Security -->
+                        <section>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                <i data-lucide="shield-check" class="text-nakngaji-primary mr-2"></i> Security & Password
+                            </h3>
+                            <div class="p-6 bg-white rounded-2xl border shadow-sm">
+                                <button class="text-nakngaji-primary font-bold hover:underline">Change Account Password</button>
+                            </div>
+                        </section>
+                    </div>
                 </div>
-
-            </section>
-        </div>
-    </main>
-
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-6 mt-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
