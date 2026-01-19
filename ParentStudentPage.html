@@ -188,12 +188,12 @@
                 </nav>
             </aside>
 
-            <!-- Main Content Area: Content switcher based on sidebar selection -->
+            <!-- Main Content Area -->
             <section class="lg:col-span-3">
                 
                 <!-- 0. HOME VIEW -->
                 <div id="HomeView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">Welcome to NakNgaji!</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter text-center lg:text-left">Welcome to NakNgaji!</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div class="p-6 bg-nakngaji-light rounded-2xl shadow-sm flex items-center space-x-4 border border-nakngaji-primary/20">
@@ -233,7 +233,7 @@
 
                 <!-- 1. BOOK NEW CLASS VIEW -->
                 <div id="BookClassView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">New Class Booking</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter text-center lg:text-left">New Class Booking</h2>
                     
                     <div id="booking-status" class="flex items-center justify-between bg-nakngaji-light text-nakngaji-primary p-4 rounded-lg mb-6 shadow-inner transition-all duration-300 border border-nakngaji-primary/10">
                         <div class="flex items-center">
@@ -325,7 +325,7 @@
 
                 <!-- 1B. PAYMENT CONFIRMATION VIEW -->
                 <div id="PaymentView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">3. Payment Confirmation</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter text-center lg:text-left">3. Payment Confirmation</h2>
                     <div class="bg-gray-50 p-8 rounded-[2.5rem] shadow-inner mb-8 border-2 border-gray-100">
                         <dl class="space-y-4">
                             <div class="flex justify-between border-b border-gray-200 pb-3">
@@ -429,12 +429,12 @@
 
                 <!-- 4. MANAGE PROFILE VIEW -->
                 <div id="ProfileView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-10 tracking-tighter">Manage Profile & Account</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-10 tracking-tighter text-center lg:text-left">Manage Profile & Account</h2>
 
                     <div class="space-y-16">
                         <!-- Parent Information Section -->
                         <section>
-                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center tracking-tighter">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center tracking-tighter text-center lg:text-left">
                                 <i data-lucide="user-check" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Parent Information
                             </h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-10 bg-gray-50 rounded-[3rem] border border-gray-200 shadow-inner transition hover:shadow-lg">
@@ -484,7 +484,7 @@
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70">Status: Level 2 Foundational</p>
                                         </div>
                                     </div>
-                                    <button onclick="removeChild(this)" class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                                    <button onclick="removeChild(this)" class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                                 </div>
                             </div>
 
@@ -733,36 +733,46 @@
         }
 
         function removeChild(btn) {
-            const card = btn.closest('.group');
-            const name = card.querySelector('p.font-black').innerText;
+            // Find the student name from the card
+            const card = btn.closest('.group') || btn.closest('.flex');
+            const nameElement = card.querySelector('p.font-black');
+            if (!nameElement) return;
+            const name = nameElement.innerText.trim();
             
             if (confirm(`Unlink ${name} from your profile? This action cannot be undone.`)) {
-                card.classList.add('animate-out', 'fade-out', 'zoom-out', 'duration-300');
+                // Remove the card from the UI
+                card.remove();
                 
-                setTimeout(() => {
-                    card.remove();
-                    updateUIVariables();
-                    
-                    // Remove from selectors
-                    const selectors = [document.getElementById('child-progress-selector'), document.getElementById('booking-child-selector')];
-                    selectors.forEach(sel => {
-                        for (let i = 0; i < sel.options.length; i++) {
-                            if (sel.options[i].text === name) {
-                                sel.remove(i);
-                                break;
-                            }
+                // Update Student Count Display
+                updateUIVariables();
+                
+                // Remove from all student selectors (Progress & Booking)
+                const selectors = [
+                    document.getElementById('child-progress-selector'), 
+                    document.getElementById('booking-child-selector')
+                ];
+                
+                selectors.forEach(sel => {
+                    if (!sel) return;
+                    for (let i = 0; i < sel.options.length; i++) {
+                        if (sel.options[i].text === name) {
+                            sel.remove(i);
+                            break;
                         }
-                    });
-                    
-                    // Update Home Quick Summary list
-                    const summaryList = document.getElementById('home-summary-list');
+                    }
+                });
+                
+                // Update Home Quick Summary list
+                const summaryList = document.getElementById('home-summary-list');
+                if (summaryList) {
                     const summaries = summaryList.querySelectorAll('[data-student]');
                     summaries.forEach(s => {
                         if (s.getAttribute('data-student') === name) s.remove();
                     });
+                }
 
-                    showProcessSuccess("Student Removed", `${name} has been successfully unlinked. Update completed.`);
-                }, 300);
+                // Show Success Notification
+                showProcessSuccess("Student Removed", `${name} has been successfully unlinked. Update completed.`);
             }
         }
 
