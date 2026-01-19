@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         /* Define the primary teal color inspired by NakNgaji */
@@ -49,36 +49,88 @@
             font-weight: 600;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
+
+        /* --- SUCCESS TICK ANIMATION STYLES --- */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .checkmark-wrapper {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px var(--color-nakngaji-primary);
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+            background: var(--color-nakngaji-primary);
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) .8s forwards;
+        }
+
+        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+        @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 40px var(--color-nakngaji-primary); } }
+        @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col" onload="initDashboard()">
+
+    <!-- SUCCESS NOTIFICATION OVERLAY (Synced with User Dashboard) -->
+    <div id="success-notification" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 animate-in fade-in zoom-in duration-300">
+            <div class="checkmark-wrapper mb-6">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <h3 id="notification-title" class="text-2xl font-black text-gray-800 text-center tracking-tighter">Completed!</h3>
+            <p id="notification-message" class="text-sm text-gray-500 text-center mt-2 font-medium">Process successfully updated.</p>
+        </div>
+    </div>
 
     <!-- Header / Navigation Bar -->
     <header class="bg-white shadow-md sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo/Title -->
-                <div class="flex-shrink-0">
-                    <span class="text-2xl font-bold text-nakngaji-primary">NakNgaji</span>
-                    <span class="text-gray-500 text-sm ml-2">Tutor LMS</span>
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-2xl font-bold text-nakngaji-primary font-black tracking-tighter italic">NakNgaji</span>
+                    <span class="text-gray-500 text-xs ml-2 px-2 py-0.5 bg-gray-100 rounded-md font-black uppercase">Staff Portal</span>
                 </div>
                 
                 <!-- User/Action Button with Dropdown -->
                 <div class="flex items-center space-x-4 relative">
-                    <span id="user-role-display" class="text-sm text-gray-700 hidden sm:block">Welcome, Ustazah Zarith!</span>
+                    <span id="user-role-display" class="text-sm text-gray-700 hidden sm:block font-medium">Welcome, Ustazah Zarith!</span>
                     
                     <button id="profile-menu-button" onclick="toggleProfileMenu()" class="flex items-center justify-center p-2 rounded-full bg-nakngaji-primary text-white hover:bg-nakngaji-dark transition duration-150 ease-in-out shadow-lg z-30">
                         <i data-lucide="user" class="w-5 h-5"></i>
                     </button>
 
                     <!-- Dropdown Menu -->
-                    <div id="profile-menu" class="absolute right-0 top-12 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl hidden z-20">
+                    <div id="profile-menu" class="absolute right-0 top-12 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl hidden z-20 overflow-hidden">
                         <div class="p-2">
-                            <p class="text-sm text-gray-500 px-3 py-1 border-b mb-1">Signed in as: Tutor</p>
-                            <a href="#" onclick="showView('ProfileView', 'nav-profile'); toggleProfileMenu(); return false;" class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">
+                            <p class="text-[10px] text-gray-400 px-3 py-1 font-black uppercase">Logged as Staff (Tutor)</p>
+                            <a href="#" onclick="showView('ProfileView', 'nav-profile'); toggleProfileMenu(); return false;" class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition font-bold">
                                 <i data-lucide="user-cog" class="w-4 h-4 mr-2"></i> Manage Profile
                             </a>
-                            <a href="#" onclick="mockSignOut()" class="flex items-center w-full px-3 py-2 mt-1 text-sm text-red-600 rounded-md hover:bg-red-50">
+                            <a href="#" onclick="mockSignOut()" class="flex items-center w-full px-3 py-2 mt-1 text-sm text-red-600 rounded-md hover:bg-red-50 transition font-black uppercase tracking-tighter">
                                 <i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Sign Out
                             </a>
                         </div>
@@ -89,12 +141,12 @@
     </header>
 
     <!-- Main Content Layout -->
-    <main class="flex-1 max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8 pb-12">
+    <main class="flex-1 max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8 pb-12 w-full">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
-            <!-- Sidebar / Menu (Tutor Options) -->
-            <aside class="lg:col-span-1 p-6 bg-white rounded-xl shadow-lg h-fit">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">Tutor Actions</h3>
+            <!-- Sidebar / Menu (Staff Options) -->
+            <aside class="lg:col-span-1 p-6 bg-white rounded-xl shadow-lg h-fit border border-gray-100">
+                <h3 class="text-[10px] font-black mb-4 text-gray-400 uppercase tracking-[0.2em] border-b pb-2">Staff Navigation</h3>
                 <nav class="space-y-2">
                     <a href="#" id="nav-home" onclick="showView('HomeView', 'nav-home')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out shadow-sm">
                         <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
@@ -102,7 +154,7 @@
                     </a>
                     <a href="#" id="nav-progress" onclick="showView('ProgressLogView', 'nav-progress')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out shadow-sm">
                         <i data-lucide="list-checks" class="w-5 h-5 mr-3"></i>
-                        Attendance & Progress Log
+                        Attendance & Progress
                     </a>
                     <a href="#" id="nav-schedule" onclick="showView('SetScheduleView', 'nav-schedule')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">
                         <i data-lucide="calendar-plus" class="w-5 h-5 mr-3"></i>
@@ -115,187 +167,180 @@
                 </nav>
             </aside>
 
-            <!-- Main Content Area: Content switcher -->
+            <!-- Main Content Area -->
             <section class="lg:col-span-3">
                 
-                <!-- ---------------------------------------------------------------------------------- -->
-                <!-- 0. TUTOR HOME VIEW (KPIs and Next Class) -->
-                <!-- ---------------------------------------------------------------------------------- -->
+                <!-- 0. TUTOR HOME VIEW -->
                 <div id="HomeView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Dashboard Overview</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">Staff Overview</h2>
                     
                     <!-- Key Performance Indicators (KPIs) -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="p-5 bg-nakngaji-light rounded-xl shadow-md flex items-center space-x-4">
-                            <i data-lucide="calendar-check" class="w-8 h-8 text-nakngaji-primary"></i>
+                        <div class="p-6 bg-nakngaji-light rounded-2xl shadow-sm flex items-center space-x-4 border border-nakngaji-primary/20">
+                            <i data-lucide="calendar-check" class="w-10 h-10 text-nakngaji-primary"></i>
                             <div>
-                                <p class="text-sm text-gray-600">Classes This Week</p>
-                                <p class="text-2xl font-bold text-nakngaji-primary">9</p>
+                                <p class="text-[10px] font-black text-nakngaji-primary uppercase tracking-widest">Sessions Weekly</p>
+                                <p class="text-3xl font-black text-gray-800">9</p>
                             </div>
                         </div>
-                        <div class="p-5 bg-white border rounded-xl shadow-md flex items-center space-x-4">
-                            <i data-lucide="users" class="w-8 h-8 text-gray-600"></i>
+                        <div class="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center space-x-4">
+                            <i data-lucide="users" class="w-10 h-10 text-gray-300"></i>
                             <div>
-                                <p class="text-sm text-gray-600">Active Students</p>
-                                <p class="text-2xl font-bold text-gray-800">14</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Active Students</p>
+                                <p class="text-xl font-black text-gray-800">14</p>
                             </div>
                         </div>
-                        <div class="p-5 bg-white border rounded-xl shadow-md flex items-center space-x-4">
-                            <i data-lucide="trending-up" class="w-8 h-8 text-gray-600"></i>
+                        <div class="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center space-x-4">
+                            <i data-lucide="trending-up" class="w-10 h-10 text-gray-300"></i>
                             <div>
-                                <p class="text-sm text-gray-600">Total Milestones Logged</p>
-                                <p class="text-2xl font-bold text-gray-800">105</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Milestones Logged</p>
+                                <p class="text-xl font-black text-gray-800">105</p>
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Your Next Session</h3>
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-l-4 border-nakngaji-primary pl-4 tracking-tighter">Your Next Session</h3>
                     
-                    <div class="p-6 border-l-4 border-nakngaji-primary bg-gray-50 rounded-xl shadow-inner mb-6 flex justify-between items-center">
-                        <div>
-                            <p class="text-lg font-bold text-gray-900">Thursday, Oct 26, 10:00 AM</p>
-                            <p class="text-nakngaji-primary font-medium">Student: Ahmad Zaki (Iqra' 4)</p>
-                            <p class="text-sm text-gray-600">Focus: Mad Silah Qasirah (Page 23)</p>
+                    <div class="p-8 border-2 border-gray-100 bg-gray-50 rounded-[2.5rem] shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center transition hover:shadow-md">
+                        <div class="text-center md:text-left mb-4 md:mb-0">
+                            <p class="text-2xl font-black text-gray-900 tracking-tighter italic">Thursday, Oct 26, 10:00 AM</p>
+                            <p class="text-nakngaji-primary font-black uppercase text-xs tracking-widest mt-1">Student: Ahmad Zaki (Iqra' 4)</p>
+                            <p class="text-sm text-gray-500 font-medium">Focus: Mad Silah Qasirah (Page 23)</p>
                         </div>
-                        <button onclick="showView('ProgressLogView', 'nav-progress')" class="bg-nakngaji-primary text-white text-sm px-4 py-2 rounded-lg hover:bg-nakngaji-dark transition">
-                            Start Session & Log
+                        <button onclick="showView('ProgressLogView', 'nav-progress')" class="bg-nakngaji-primary text-white font-black py-4 px-8 rounded-2xl hover:bg-nakngaji-dark transition transform active:scale-95 shadow-xl uppercase tracking-widest text-xs">
+                            Start & Log Session
                         </button>
                     </div>
 
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Pending Actions</h3>
-                    <div class="space-y-3">
-                        <div class="p-3 bg-red-50 border border-red-200 rounded-lg flex justify-between items-center">
-                            <p class="text-sm text-red-700 font-medium">Attendance for Wednesday 8:00 PM is missing.</p>
-                            <button onclick="showView('ProgressLogView', 'nav-progress')" class="text-red-700 hover:underline text-xs font-semibold">Log Now</button>
-                        </div>
-                        <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex justify-between items-center">
-                            <p class="text-sm text-yellow-700 font-medium">New student assigned: Harith (Iqra' 1).</p>
-                            <span class="text-xs text-yellow-600">Check Profile</span>
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-l-4 border-nakngaji-primary pl-4 tracking-tighter">Pending Actions</h3>
+                    <div class="space-y-4">
+                        <div class="p-5 bg-red-50 border border-red-100 rounded-2xl flex justify-between items-center group">
+                            <p class="text-xs text-red-700 font-black uppercase tracking-tighter">Attendance for Wednesday 8:00 PM is missing.</p>
+                            <button onclick="showView('ProgressLogView', 'nav-progress')" class="text-red-700 font-black text-[10px] uppercase border-b-2 border-red-200 hover:border-red-700 transition">Log Now</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- ---------------------------------------------------------------------------------- -->
                 <!-- 1. ATTENDANCE & PROGRESS LOG VIEW -->
-                <!-- ---------------------------------------------------------------------------------- -->
                 <div id="ProgressLogView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Attendance & Progress Log</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-8 tracking-tighter">Session Progress Log</h2>
 
-                    <div class="bg-nakngaji-light text-nakngaji-primary p-4 rounded-lg mb-6 shadow-inner font-medium">
-                        <label for="session-selector" class="mr-3">Select Session:</label>
-                        <select id="session-selector" class="bg-nakngaji-light border border-nakngaji-primary rounded-md p-1">
+                    <div class="bg-nakngaji-light/30 border border-nakngaji-primary/10 text-nakngaji-primary p-6 rounded-[2rem] mb-10 shadow-inner">
+                        <label for="session-selector" class="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 opacity-60">Selected Session Target:</label>
+                        <select id="session-selector" class="w-full bg-white border-2 border-nakngaji-primary/20 rounded-xl p-3 font-black text-gray-800 focus:border-nakngaji-primary outline-none appearance-none cursor-pointer">
                             <option>Wed, Oct 25, 8:00 PM (Ahmad Zaki)</option>
                             <option>Thu, Oct 26, 10:00 AM (Ahmad Zaki)</option>
                             <option>Fri, Oct 27, 8:00 PM (Harith)</option>
                         </select>
                     </div>
 
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">1. Record Attendance</h3>
-                    <div class="p-5 bg-gray-50 rounded-xl shadow-inner mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Student Attendance Status:</label>
-                        <div class="flex space-x-4">
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="attendance" value="Present" checked class="form-radio text-green-500 focus:ring-green-500">
-                                <span class="ml-2 text-green-700 font-medium">Present</span>
+                    <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4">1. Student Attendance</h3>
+                    <div class="p-8 bg-gray-50 rounded-[2.5rem] border-2 border-gray-100 mb-8">
+                        <div class="flex flex-wrap gap-4">
+                            <label class="flex-1 min-w-[120px] relative group cursor-pointer">
+                                <input type="radio" name="attendance" value="Present" checked class="peer hidden">
+                                <!-- FIXED: Changed to green-500/green-50 for standard color consistency -->
+                                <div class="p-4 border-2 border-gray-200 rounded-2xl text-center bg-white peer-checked:border-green-500 peer-checked:bg-green-50 transition">
+                                    <span class="font-black text-xs uppercase tracking-widest text-gray-400 peer-checked:text-green-600">Present</span>
+                                </div>
                             </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="attendance" value="Absent" class="form-radio text-red-500 focus:ring-red-500">
-                                <span class="ml-2 text-red-700 font-medium">Absent</span>
+                            <label class="flex-1 min-w-[120px] relative group cursor-pointer">
+                                <input type="radio" name="attendance" value="Absent" class="peer hidden">
+                                <div class="p-4 border-2 border-gray-200 rounded-2xl text-center bg-white peer-checked:border-red-500 peer-checked:bg-red-50 transition">
+                                    <span class="font-black text-xs uppercase tracking-widest text-gray-400 peer-checked:text-red-500">Absent</span>
+                                </div>
                             </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="attendance" value="Late" class="form-radio text-yellow-500 focus:ring-yellow-500">
-                                <span class="ml-2 text-yellow-700 font-medium">Late</span>
+                            <label class="flex-1 min-w-[120px] relative group cursor-pointer">
+                                <input type="radio" name="attendance" value="Late" class="peer hidden">
+                                <div class="p-4 border-2 border-gray-200 rounded-2xl text-center bg-white peer-checked:border-yellow-500 peer-checked:bg-yellow-50 transition">
+                                    <span class="font-black text-xs uppercase tracking-widest text-gray-400 peer-checked:text-yellow-600">Late</span>
+                                </div>
                             </label>
                         </div>
                     </div>
 
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">2. Log Milestone Achieved</h3>
-                    <div class="p-5 bg-white border rounded-xl shadow-inner">
-                        <label for="milestone" class="block text-sm font-medium text-gray-700 mb-2">Detailed Progress / Milestone:</label>
-                        <input type="text" id="milestone" placeholder="e.g., Completed Iqra' Book 4, Page 23 (Mad Silah Qasirah)"
-                               class="w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary mb-4">
+                    <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4">2. Performance & Milestone</h3>
+                    <div class="p-8 bg-white border-2 border-gray-100 rounded-[2.5rem] shadow-inner">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1 tracking-widest">Milestone Achieved</label>
+                        <input type="text" id="milestone" placeholder="e.g. Completed Iqra' 4, Page 23"
+                               class="w-full p-4 border-2 border-gray-200 rounded-2xl focus:ring-4 ring-nakngaji-primary/10 focus:border-nakngaji-primary outline-none transition font-bold text-gray-800 shadow-sm mb-6">
                         
-                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Private Notes (Optional):</label>
-                        <textarea id="notes" rows="3" placeholder="e.g., Needs more practice on letter 'tha' for next week."
-                                  class="w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary"></textarea>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1 tracking-widest">Feedback Notes</label>
+                        <textarea id="notes" rows="4" placeholder="Brief feedback for the parent..."
+                                  class="w-full p-4 border-2 border-gray-200 rounded-2xl focus:ring-4 ring-nakngaji-primary/10 focus:border-nakngaji-primary outline-none transition font-medium text-gray-800 shadow-sm"></textarea>
 
-                        <div class="mt-4 flex justify-end">
-                             <button onclick="mockSaveProgress()" class="bg-nakngaji-primary text-white font-semibold py-2 px-6 rounded-xl hover:bg-nakngaji-dark transition shadow-md flex items-center">
-                                <i data-lucide="save" class="w-4 h-4 mr-2"></i> Save & Notify Parent
+                        <div class="mt-10 flex justify-end">
+                             <button onclick="handleSessionLog()" class="bg-nakngaji-primary text-white font-black py-4 px-10 rounded-[2rem] hover:bg-nakngaji-dark transition transform active:scale-95 shadow-2xl flex items-center uppercase tracking-widest text-sm">
+                                <i data-lucide="save" class="w-5 h-5 mr-3"></i> Save & Notify Parent
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- ---------------------------------------------------------------------------------- -->
                 <!-- 2. SET AVAILABILITY VIEW -->
-                <!-- ---------------------------------------------------------------------------------- -->
                 <div id="SetScheduleView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Set Your Teaching Availability</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-10 tracking-tighter">Availability Management</h2>
 
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Manage Recurring Slots</h3>
-                    
-                    <!-- Form to add new slot -->
-                    <div class="p-6 bg-nakngaji-light rounded-xl shadow-inner mb-6">
-                        <h4 class="text-lg font-bold text-nakngaji-primary mb-4">Add New Available Slot</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="p-8 border-2 border-dashed border-nakngaji-primary rounded-[3rem] bg-nakngaji-light/10 mb-10 shadow-inner">
+                        <h4 class="font-black text-gray-800 mb-6 flex items-center uppercase text-xs tracking-widest">
+                            <i data-lucide="plus-circle" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Add Available Teaching Slot
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Day</label>
-                                <select class="w-full p-2 border border-gray-300 rounded-lg">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Day</label>
+                                <select class="w-full p-4 border-2 border-gray-200 rounded-2xl bg-white font-black outline-none focus:border-nakngaji-primary transition">
                                     <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
                                     <option>Thursday</option><option>Friday</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                                <input type="time" class="w-full p-2 border border-gray-300 rounded-lg" value="19:00">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Time</label>
+                                <input type="time" class="w-full p-4 border-2 border-gray-200 rounded-2xl font-black focus:border-nakngaji-primary transition" value="19:00">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                                <input type="time" class="w-full p-2 border border-gray-300 rounded-lg" value="21:00">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Duration</label>
+                                <select class="w-full p-4 border-2 border-gray-200 rounded-2xl bg-white font-black focus:border-nakngaji-primary transition">
+                                    <option>1 Hour</option><option>1.5 Hours</option>
+                                </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Max Capacity</label>
-                                <input type="number" class="w-full p-2 border border-gray-300 rounded-lg" value="1" min="1" max="5">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Cap.</label>
+                                <input type="number" class="w-full p-4 border-2 border-gray-200 rounded-2xl font-black focus:border-nakngaji-primary transition" value="1">
                             </div>
                         </div>
-                        <div class="mt-4 flex justify-end">
-                            <button onclick="mockAlert('New slot added to schedule!')" class="bg-nakngaji-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-nakngaji-dark transition">
-                                Add Slot
+                        <div class="mt-8 flex justify-end">
+                            <button onclick="handleAddSlot()" class="bg-nakngaji-primary text-white font-black py-4 px-10 rounded-3xl shadow-xl hover:bg-nakngaji-dark transition transform active:scale-95 uppercase text-xs tracking-widest">
+                                Activate Slot
                             </button>
                         </div>
                     </div>
 
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Current Active Schedule</h3>
-                    <!-- Schedule Table Mock -->
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="min-w-full divide-y divide-gray-200 border rounded-xl">
+                    <h3 class="text-xl font-bold mb-6 text-gray-800 tracking-tighter border-l-4 border-nakngaji-primary pl-4">Active Calendar Slots</h3>
+                    <div class="overflow-x-auto border-2 border-gray-50 rounded-[2.5rem] shadow-sm overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-100">
                             <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacity</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booked</th>
-                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                <tr class="bg-white">
+                                    <th class="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest border-r">Day</th>
+                                    <th class="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Time</th>
+                                    <th class="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                                    <th class="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="bg-white divide-y divide-gray-50">
                                 <tr>
-                                    <td class="px-4 py-3 font-medium">Monday</td>
-                                    <td class="px-4 py-3">8:00 PM - 9:00 PM</td>
-                                    <td class="px-4 py-3">1</td>
-                                    <td class="px-4 py-3 text-red-600 font-semibold">1 (Full)</td>
-                                    <td class="px-4 py-3 text-right">
-                                        <button class="text-red-500 hover:text-red-700 text-sm" onclick="mockAlert('Slot deactivated.')">Deactivate</button>
+                                    <td class="px-8 py-6 whitespace-nowrap font-black text-gray-800 border-r">Monday</td>
+                                    <td class="px-8 py-6 whitespace-nowrap text-sm font-bold text-gray-500 tracking-tight">8:00 PM - 9:00 PM</td>
+                                    <td class="px-8 py-6 whitespace-nowrap"><span class="bg-red-50 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter border border-red-100">Fully Booked</span></td>
+                                    <td class="px-8 py-6 whitespace-nowrap text-right">
+                                        <button class="text-red-400 hover:text-red-600 transition" onclick="showProcessSuccess('Slot Removed', 'Availability updated.')"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="px-4 py-3 font-medium">Tuesday</td>
-                                    <td class="px-4 py-3">9:00 AM - 11:00 AM</td>
-                                    <td class="px-4 py-3">3</td>
-                                    <td class="px-4 py-3 text-green-600 font-semibold">1 (Open)</td>
-                                    <td class="px-4 py-3 text-right">
-                                        <button class="text-red-500 hover:text-red-700 text-sm" onclick="mockAlert('Slot deactivated.')">Deactivate</button>
+                                    <td class="px-8 py-6 whitespace-nowrap font-black text-gray-800 border-r">Tuesday</td>
+                                    <td class="px-8 py-6 whitespace-nowrap text-sm font-bold text-gray-500 tracking-tight">9:00 AM - 11:00 AM</td>
+                                    <td class="px-8 py-6 whitespace-nowrap"><span class="bg-green-50 text-green-700 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter border border-green-100">Open</span></td>
+                                    <td class="px-8 py-6 whitespace-nowrap text-right">
+                                        <button class="text-red-400 hover:text-red-600 transition" onclick="showProcessSuccess('Slot Disabled', 'Not available for booking now.')"><i data-lucide="slash" class="w-5 h-5"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -303,52 +348,43 @@
                     </div>
                 </div>
 
-                <!-- ---------------------------------------------------------------------------------- -->
-                <!-- 3. MANAGE PROFILE VIEW (Shared Structure) -->
-                <!-- ---------------------------------------------------------------------------------- -->
+                <!-- 3. MANAGE PROFILE VIEW -->
                 <div id="ProfileView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Manage Tutor Profile & Details</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-10 tracking-tighter">Manage Staff Profile</h2>
 
-                    <form class="space-y-6">
-                        <h3 class="text-xl font-semibold text-gray-800">Tutor/Ustazah Information</h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                <input type="text" id="name" value="Ustazah Zarith binti Kamal" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
+                    <div class="space-y-16">
+                        <section>
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center tracking-tighter">
+                                <i data-lucide="user-check" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Personal Information
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-10 bg-gray-50 rounded-[3rem] border border-gray-200 shadow-inner transition hover:shadow-lg">
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1 tracking-[0.2em]">Full Name</label>
+                                    <input type="text" value="Ustazah Zarith binti Kamal" class="w-full p-4 border-2 border-gray-200 rounded-[1.25rem] bg-white outline-none focus:border-nakngaji-primary transition font-bold text-gray-800 shadow-sm text-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1 tracking-[0.2em]">Specialty</label>
+                                    <input type="text" value="Tajwid & Advanced Iqra'" class="w-full p-4 border-2 border-gray-200 rounded-[1.25rem] bg-white outline-none focus:border-nakngaji-primary transition font-bold text-gray-800 shadow-sm text-lg">
+                                </div>
+                                <div class="md:col-span-2 flex justify-end">
+                                    <button onclick="handleUpdateProfile()" class="bg-nakngaji-primary text-white font-black py-4 px-10 rounded-[2rem] hover:opacity-90 shadow-2xl transform active:scale-95 transition uppercase tracking-widest text-sm">Update Staff Data</button>
+                                </div>
                             </div>
-                            <div>
-                                <label for="specialty" class="block text-sm font-medium text-gray-700">Specialty</label>
-                                <input type="text" id="specialty" value="Tajwid & Advanced Iqra'" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
-                            </div>
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                <input type="email" id="email" value="zarith@nakngaji.com" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
-                            </div>
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number (for parent contact)</label>
-                                <input type="text" id="phone" value="+60177778888" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
-                            </div>
-                        </div>
+                        </section>
 
-                        <h3 class="text-xl font-semibold pt-4 text-gray-800 border-t">Change Password</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
-                                <input type="password" id="current-password" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
+                        <section>
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center tracking-tighter">
+                                <i data-lucide="shield-check" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Security
+                            </h3>
+                            <div class="p-10 bg-white rounded-[3rem] border-2 border-gray-100 shadow-sm flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 transition hover:shadow-md">
+                                <div class="text-center md:text-left">
+                                    <p class="font-black text-gray-700 tracking-tight text-xl">Login Credentials</p>
+                                    <p class="text-xs text-gray-400 font-bold uppercase tracking-tighter mt-1">Update your password regularly to protect your staff portal.</p>
+                                </div>
+                                <button class="bg-gray-900 text-white font-black py-4 px-12 rounded-[2rem] shadow-xl hover:bg-black transition transform active:scale-95 uppercase text-xs tracking-[0.2em]">Change Password</button>
                             </div>
-                            <div>
-                                <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
-                                <input type="password" id="new-password" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-nakngaji-primary focus:border-nakngaji-primary">
-                            </div>
-                        </div>
-                        
-                        <div class="pt-4 border-t flex justify-end">
-                            <button type="submit" class="bg-nakngaji-primary text-white font-semibold py-2 px-6 rounded-xl shadow-lg hover:bg-nakngaji-dark transition duration-150 ease-in-out">
-                                Save Profile Changes
-                            </button>
-                        </div>
-                    </form>
+                        </section>
+                    </div>
                 </div>
 
             </section>
@@ -356,76 +392,72 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-6 mt-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
-            &copy; 2024 NakNgaji Booking System. Developed by 4GL Team.
+    <footer class="bg-gray-900 text-white py-16 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center items-center space-x-4 mb-8">
+                <span class="text-nakngaji-primary font-black text-2xl tracking-tighter italic">NakNgaji</span>
+                <span class="w-1.5 h-1.5 bg-gray-700 rounded-full"></span>
+                <span class="text-[10px] uppercase font-black tracking-[0.5em] text-gray-500">Staff Control Panel</span>
+            </div>
+            <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">&copy; 2024 Developed by 4GL Team for Global Quranic Literacy.</p>
         </div>
     </footer>
 
-    <!-- JavaScript for View Switching and Logic -->
+    <!-- JavaScript Core -->
     <script>
-        // MOCK FUNCTION: Replaces alert() for a better UX (Also used for mock feedback)
-        function mockAlert(message) {
-            // Using the native alert() for simplicity in this file, as there is no central mock alert component.
-            window.alert(message);
-        }
-
-        // Function to switch between content views
-        function showView(viewId, navLinkId) {
-            // Hide all views
-            document.querySelectorAll('.content-view').forEach(view => {
-                view.style.display = 'none';
-            });
-            // Remove active class from all links
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('nav-active');
-            });
-
-            // Show selected view and set active link
-            const selectedView = document.getElementById(viewId);
-            const selectedLink = document.getElementById(navLinkId);
-            
-            if (selectedView) {
-                selectedView.style.display = 'block';
-                // Re-initialize lucide icons for the new content
-                lucide.createIcons();
-            }
-            if (selectedLink) {
-                selectedLink.classList.add('nav-active');
-            }
-        }
-        
-        // Function to toggle the profile dropdown menu
-        function toggleProfileMenu() {
-            const menu = document.getElementById('profile-menu');
-            menu.classList.toggle('hidden');
-        }
-
-        // Mock sign out function
-        function mockSignOut() {
-            toggleProfileMenu(); // Hide menu
-            if (confirm("Are you sure you want to sign out?")) {
-                mockAlert("Signing out... Redirecting to Login Page.");
-                // Redirect to the login page
-                window.location.href = 'index.html'; 
-            }
-        }
-
-        // Mock save progress action
-        function mockSaveProgress() {
-            const milestone = document.getElementById('milestone').value;
-            if (milestone.trim() === '') {
-                mockAlert("Please enter a milestone description before saving.");
-                return;
-            }
-            mockAlert(`Progress Saved! Milestone: "${milestone}". Parent will be notified.`);
-        }
-
-        // Initialization function
-        function initDashboard() {
-            // Initialize Lucide icons
+        // UI View Controller
+        function showView(viewId, navId) {
+            document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('nav-active'));
+            const targetView = document.getElementById(viewId);
+            const targetNav = document.getElementById(navId);
+            if (targetView) targetView.style.display = 'block';
+            if (targetNav) targetNav.classList.add('nav-active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
-            // Set initial view to "Home Overview"
+        }
+
+        // --- SUCCESS ANIMATION LOGIC (Synced with User Portal) ---
+        function showProcessSuccess(title, message) {
+            const modal = document.getElementById('success-notification');
+            document.getElementById('notification-title').innerText = title;
+            document.getElementById('notification-message').innerText = message;
+            
+            modal.classList.remove('hidden');
+            
+            // Auto-hide after 2.5 seconds
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 2500);
+        }
+
+        // Action Handlers
+        function handleSessionLog() {
+            const m = document.getElementById('milestone').value;
+            if(!m) { alert("Please enter a milestone description."); return; }
+            showProcessSuccess("Session Logged!", "Attendance and progress have been recorded. Parent has been notified.");
+            document.getElementById('milestone').value = "";
+            document.getElementById('notes').value = "";
+        }
+
+        function handleAddSlot() {
+            showProcessSuccess("Slot Activated!", "Your availability has been updated in the master schedule.");
+        }
+
+        function handleUpdateProfile() {
+            showProcessSuccess("Update Complete!", "Your staff profile information has been securely updated.");
+        }
+
+        function toggleProfileMenu() { document.getElementById('profile-menu').classList.toggle('hidden'); }
+        
+        function mockSignOut() { 
+            if (confirm("System Alert: Are you sure you want to sign out from the Staff Portal?")) {
+                window.location.href = 'LoginPage.html'; 
+            }
+        }
+
+        function initDashboard() {
+            lucide.createIcons();
             showView('HomeView', 'nav-home');
         }
     </script>

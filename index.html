@@ -11,8 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* Define the primary teal color inspired by NakNgaji */
         :root {
-            --color-nakngaji-primary: #00A89D;
+            --color-nakngaji-primary: #00A89D; /* A vibrant teal/green */
             --color-nakngaji-light: #CCF0EE;
         }
 
@@ -33,37 +34,38 @@
             padding: 20px;
         }
         .role-button {
-            transition: all 0.2s ease-in-out;
+            transition: all 0.3s ease-in-out;
         }
         .role-button.active {
             background-color: var(--color-nakngaji-primary);
             color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 168, 157, 0.3), 0 2px 4px -2px rgba(0, 168, 157, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(0, 168, 157, 0.3);
         }
     </style>
 </head>
 <body onload="initLogin()">
 
-    <div class="w-full max-w-md bg-white p-8 md:p-10 rounded-xl shadow-2xl">
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-extrabold text-nakngaji-primary mb-2">
+    <!-- Main Container: Styled with Admin Dashboard premium tokens -->
+    <div class="w-full max-w-md bg-white p-10 md:p-12 rounded-[3rem] shadow-2xl border border-gray-100 animate-in fade-in zoom-in duration-500">
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-black text-nakngaji-primary mb-3 tracking-tighter italic">
                 NakNgaji
             </h1>
-            <p class="text-gray-600 text-lg">Sign in to your learning account</p>
+            <p class="text-gray-400 font-black uppercase text-[10px] tracking-[0.3em]">Secure Access Portal</p>
         </div>
 
-        <!-- Role Selection Tabs -->
-        <div class="flex mb-6 p-1 bg-gray-100 rounded-xl border border-gray-200">
+        <!-- Role Selection Tabs: Synced with premium rounded-xl style -->
+        <div class="flex mb-8 p-1.5 bg-gray-100 rounded-[1.5rem] border border-gray-200">
             <button id="role-user" 
                     onclick="selectRole('User')" 
-                    class="role-button flex-1 py-3 rounded-xl font-semibold text-center text-gray-700 active">
-                <i data-lucide="home" class="w-5 h-5 inline-block mr-2"></i>
+                    class="role-button flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-center text-gray-500 active">
+                <i data-lucide="home" class="w-4 h-4 inline-block mr-2 opacity-50"></i>
                 User
             </button>
             <button id="role-staff" 
                     onclick="selectRole('Staff')" 
-                    class="role-button flex-1 py-3 rounded-xl font-semibold text-center text-gray-700">
-                <i data-lucide="shield" class="w-5 h-5 inline-block mr-2"></i>
+                    class="role-button flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-center text-gray-500">
+                <i data-lucide="shield" class="w-4 h-4 inline-block mr-2 opacity-50"></i>
                 Staff
             </button>
         </div>
@@ -71,40 +73,46 @@
         <form id="loginForm" class="space-y-6">
             <input type="hidden" id="selected-role" value="User">
 
+            <!-- Email Field -->
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <div class="relative">
-                    <i data-lucide="mail" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                <label for="email" class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1 tracking-[0.2em]">Email Address</label>
+                <div class="relative group">
+                    <i data-lucide="mail" class="w-5 h-5 text-gray-300 absolute left-4 top-1/2 transform -translate-y-1/2 group-focus-within:text-nakngaji-primary transition"></i>
                     <input type="email" id="email" required placeholder="name@example.com"
-                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ring-nakngaji-primary focus:border-nakngaji-primary transition duration-150" />
+                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-100 rounded-2xl focus:ring-4 ring-nakngaji-primary/10 focus:border-nakngaji-primary outline-none transition font-bold text-gray-800 shadow-sm" />
                 </div>
             </div>
 
+            <!-- Password Field -->
             <div>
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <div class="relative">
-                    <i data-lucide="lock" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
-                    <input type="password" id="password" required placeholder="••••••••"
-                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ring-nakngaji-primary focus:border-nakngaji-primary transition duration-150" />
+                <div class="flex justify-between items-center mb-2 ml-1">
+                    <label for="password" class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Password</label>
+                    <a href="#" class="text-[10px] font-black text-nakngaji-primary uppercase tracking-widest hover:underline" onclick="mockAlert('Recovery email triggered.')">Forgot?</a>
                 </div>
-                <div class="flex justify-end mt-2">
-                    <a href="#" class="text-sm font-medium text-nakngaji-primary hover:underline" onclick="mockAlert('Password reset link sent to email.')">Forgot Password?</a>
+                <div class="relative group">
+                    <i data-lucide="lock" class="w-5 h-5 text-gray-300 absolute left-4 top-1/2 transform -translate-y-1/2 group-focus-within:text-nakngaji-primary transition"></i>
+                    <input type="password" id="password" required placeholder="••••••••"
+                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-100 rounded-2xl focus:ring-4 ring-nakngaji-primary/10 focus:border-nakngaji-primary outline-none transition font-bold text-gray-800 shadow-sm" />
                 </div>
             </div>
 
+            <!-- Submit Button: Styled with premium button tokens -->
             <button type="submit"
-                    class="w-full bg-nakngaji-primary text-white font-semibold py-3 rounded-xl hover:bg-nakngaji-dark transition duration-200 shadow-lg flex items-center justify-center space-x-2">
-                <i data-lucide="log-in" class="w-5 h-5"></i>
-                <span>Sign In</span>
+                    class="w-full bg-nakngaji-primary text-white font-black py-5 px-8 rounded-[2rem] shadow-2xl hover:opacity-90 transform active:scale-95 transition duration-200 flex items-center justify-center space-x-3 uppercase tracking-widest text-xs">
+                <i data-lucide="log-in" class="w-4 h-4"></i>
+                <span>Enter Dashboard</span>
             </button>
         </form>
 
-        <div class="mt-6 text-center text-sm text-gray-600">
-            Don't have an account? 
-            <a href="RegistrationPage.html" class="font-semibold text-nakngaji-primary hover:underline">Register Now</a>
+        <div class="mt-8 text-center">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                New to NakNgaji? 
+                <a href="RegistrationPage.html" class="text-nakngaji-primary hover:underline ml-1">Register Profile</a>
+            </p>
         </div>
         
-        <div id="mock-alert" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-nakngaji-primary text-white p-3 rounded-lg shadow-xl text-center z-50 transition duration-300 ease-in-out"></div>
+        <!-- Custom Mock Alert: Styled with premium notification tokens -->
+        <div id="mock-alert" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-8 py-4 rounded-2xl shadow-2xl text-center z-50 font-bold text-sm tracking-tight border border-gray-700 animate-in slide-in-from-top duration-300"></div>
     </div>
 
     <script>
@@ -119,26 +127,35 @@
 
         function selectRole(role) {
             document.getElementById('selected-role').value = role;
+            
+            // Manage active class for visual feedback
             document.querySelectorAll('.role-button').forEach(button => {
-                button.classList.remove('active');
+                button.classList.remove('active', 'text-white');
+                button.classList.add('text-gray-500');
             });
-            document.getElementById(`role-${role.toLowerCase()}`).classList.add('active');
+            const activeBtn = document.getElementById(`role-${role.toLowerCase()}`);
+            activeBtn.classList.add('active', 'text-white');
+            activeBtn.classList.remove('text-gray-500');
+            
+            lucide.createIcons();
         }
         
+        // Initialization
         function initLogin() {
             lucide.createIcons();
+            // Ensure User is selected by default on load
             selectRole('User'); 
         }
 
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
             const role = document.getElementById('selected-role').value;
             let redirectPage = '';
             let alertRole = role;
 
-            if (email && password) {
+            if (email) {
+                // REDIRECTION LOGIC
                 if (role === 'User') { 
                     redirectPage = 'ParentStudentPage.html'; 
                 } else if (role === 'Staff') { 
@@ -151,12 +168,10 @@
                     }
                 }
 
-                mockAlert(`Login successful! Redirecting to ${alertRole} Dashboard...`);
+                mockAlert(`Access Granted. Redirecting to ${alertRole} Node...`);
                 if (redirectPage) {
-                    setTimeout(() => { window.location.href = redirectPage; }, 1000); 
+                    setTimeout(() => { window.location.href = redirectPage; }, 1200); 
                 }
-            } else {
-                mockAlert("Please enter both email and password.");
             }
         });
     </script>

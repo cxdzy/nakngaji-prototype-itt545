@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent/Student Dashboard - NakNgaji LMS</title>
+    <title>User Dashboard - NakNgaji LMS</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         /* Define the primary teal color inspired by NakNgaji */
@@ -49,36 +49,105 @@
             font-weight: 600;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
+
+        /* Slot highlight style */
+        .slot-selected {
+            background-color: #FBBF24 !important; /* Amber-400 */
+            color: #000 !important;
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* --- SUCCESS TICK ANIMATION STYLES --- */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .checkmark-wrapper {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px var(--color-nakngaji-primary);
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+            background: var(--color-nakngaji-primary);
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) .8s forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+
+        @keyframes fill {
+            100% { box-shadow: inset 0px 0px 0px 40px var(--color-nakngaji-primary); }
+        }
+
+        @keyframes scale {
+            0%, 100% { transform: none; }
+            50% { transform: scale3d(1.1, 1.1, 1); }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col" onload="initDashboard()">
+
+    <!-- SUCCESS NOTIFICATION OVERLAY -->
+    <div id="success-notification" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 animate-in fade-in zoom-in duration-300">
+            <div class="checkmark-wrapper mb-6">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <h3 id="notification-title" class="text-2xl font-black text-gray-800 text-center tracking-tighter">Completed!</h3>
+            <p id="notification-message" class="text-sm text-gray-500 text-center mt-2 font-medium">The update has been processed successfully.</p>
+        </div>
+    </div>
 
     <!-- Header / Navigation Bar -->
     <header class="bg-white shadow-md sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo/Title -->
-                <div class="flex-shrink-0">
-                    <span class="text-2xl font-bold text-nakngaji-primary">NakNgaji</span>
-                    <span class="text-gray-500 text-sm ml-2">Parent/Student LMS</span>
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-2xl font-bold text-nakngaji-primary font-black tracking-tighter italic">NakNgaji</span>
+                    <span class="text-gray-500 text-xs ml-2 px-2 py-0.5 bg-gray-100 rounded-md font-black uppercase">User Portal</span>
                 </div>
                 
                 <!-- User/Action Button with Dropdown -->
                 <div class="flex items-center space-x-4 relative">
-                    <span id="user-role-display" class="text-sm text-gray-700 hidden sm:block">Welcome, Parent!</span>
+                    <span id="user-role-display" class="text-sm text-gray-700 hidden sm:block font-medium">Welcome, Parent!</span>
                     
                     <button id="profile-menu-button" onclick="toggleProfileMenu()" class="flex items-center justify-center p-2 rounded-full bg-nakngaji-primary text-white hover:bg-nakngaji-dark transition duration-150 ease-in-out shadow-lg z-30">
                         <i data-lucide="user" class="w-5 h-5"></i>
                     </button>
 
                     <!-- Dropdown Menu -->
-                    <div id="profile-menu" class="absolute right-0 top-12 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl hidden z-20">
+                    <div id="profile-menu" class="absolute right-0 top-12 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl hidden z-20 overflow-hidden">
                         <div class="p-2">
-                            <p class="text-sm text-gray-500 px-3 py-1 border-b mb-1">Signed in as: Parent</p>
-                            <a href="#" onclick="showView('ProfileView', 'nav-profile'); toggleProfileMenu(); return false;" class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">
+                            <p class="text-[10px] text-gray-400 px-3 py-1 font-black uppercase">Logged as User</p>
+                            <a href="#" onclick="showView('ProfileView', 'nav-profile'); toggleProfileMenu(); return false;" class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition font-bold">
                                 <i data-lucide="user-cog" class="w-4 h-4 mr-2"></i> Manage Profile
                             </a>
-                            <a href="#" onclick="mockSignOut()" class="flex items-center w-full px-3 py-2 mt-1 text-sm text-red-600 rounded-md hover:bg-red-50">
+                            <a href="#" onclick="mockSignOut()" class="flex items-center w-full px-3 py-2 mt-1 text-sm text-red-600 rounded-md hover:bg-red-50 transition font-black uppercase tracking-tighter">
                                 <i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Sign Out
                             </a>
                         </div>
@@ -89,12 +158,12 @@
     </header>
 
     <!-- Main Content Layout -->
-    <main class="flex-1 max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8 pb-12">
+    <main class="flex-1 max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8 pb-12 w-full">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
-            <!-- Sidebar / Menu (Parent Options) -->
-            <aside class="lg:col-span-1 p-6 bg-white rounded-xl shadow-lg h-fit">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">Parent Actions</h3>
+            <!-- Sidebar / Menu (User Options) -->
+            <aside class="lg:col-span-1 p-6 bg-white rounded-xl shadow-lg h-fit border border-gray-100">
+                <h3 class="text-[10px] font-black mb-4 text-gray-400 uppercase tracking-[0.2em] border-b pb-2">User Navigation</h3>
                 <nav class="space-y-2">
                     <a href="#" id="nav-home" onclick="showView('HomeView', 'nav-home')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out shadow-sm">
                         <i data-lucide="home" class="w-5 h-5 mr-3"></i>
@@ -106,7 +175,7 @@
                     </a>
                     <a href="#" id="nav-progress" onclick="showView('ProgressView', 'nav-progress')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">
                         <i data-lucide="trending-up" class="w-5 h-5 mr-3"></i>
-                        View Student Progress
+                        Student Progress
                     </a>
                     <a href="#" id="nav-payment" onclick="showView('PaymentHistoryView', 'nav-payment')" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">
                         <i data-lucide="wallet" class="w-5 h-5 mr-3"></i>
@@ -122,363 +191,275 @@
             <!-- Main Content Area: Content switcher based on sidebar selection -->
             <section class="lg:col-span-3">
                 
-                <!-- ---------------------------------------------------------------------------------- -->
-                <!-- 0. HOME VIEW (NEW) -->
-                <!-- ---------------------------------------------------------------------------------- -->
+                <!-- 0. HOME VIEW -->
                 <div id="HomeView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Welcome to NakNgaji LMS!</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">Welcome to NakNgaji!</h2>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="p-5 bg-nakngaji-light rounded-xl shadow-md flex items-center space-x-4">
-                            <i data-lucide="award" class="w-8 h-8 text-nakngaji-primary"></i>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="p-6 bg-nakngaji-light rounded-2xl shadow-sm flex items-center space-x-4 border border-nakngaji-primary/20">
+                            <i data-lucide="award" class="w-10 h-10 text-nakngaji-primary"></i>
                             <div>
-                                <p class="text-sm text-gray-600">Current Level (Ahmad Zaki)</p>
-                                <p class="text-2xl font-bold text-nakngaji-primary">Iqra' Book 4</p>
+                                <p class="text-[10px] font-black text-nakngaji-primary uppercase tracking-widest">Active Students</p>
+                                <p id="home-child-count" class="text-3xl font-black text-gray-800">2 Children</p>
                             </div>
                         </div>
-                        <div class="p-5 bg-white border rounded-xl shadow-md flex items-center space-x-4">
-                            <i data-lucide="calendar" class="w-8 h-8 text-gray-600"></i>
+                        <div class="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center space-x-4">
+                            <i data-lucide="calendar" class="w-10 h-10 text-gray-300"></i>
                             <div>
-                                <p class="text-sm text-gray-600">Next Class</p>
-                                <p class="text-xl font-bold text-gray-800">Wed, Oct 25, 8:00 PM</p>
-                            </div>
-                        </div>
-                        <div class="p-5 bg-white border rounded-xl shadow-md flex items-center space-x-4">
-                            <i data-lucide="wallet" class="w-8 h-8 text-gray-600"></i>
-                            <div>
-                                <p class="text-sm text-gray-600">Next Payment Due</p>
-                                <p class="text-xl font-bold text-red-600">RM 220.00 (15 Nov)</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Next Class</p>
+                                <p class="text-xl font-black text-gray-800">Wed, Oct 25, 8:00 PM</p>
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Latest Activity</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="p-4 border-l-4 border-nakngaji-primary bg-gray-50 rounded-lg shadow-sm flex justify-between items-center">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-l-4 border-nakngaji-primary pl-4 tracking-tighter">Quick Summary</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:scale-[1.02] duration-300">
                             <div>
-                                <p class="font-bold text-gray-900">Progress Update (15 Oct)</p>
-                                <p class="text-sm text-nakngaji-primary">Ahmad Zaki completed Iqra' Book 3, Page 22.</p>
+                                <p class="font-black text-gray-900 text-lg">Ahmad Zaki</p>
+                                <p class="text-xs font-bold text-nakngaji-primary uppercase tracking-tighter">Level: Iqra' 4</p>
                             </div>
-                            <button onclick="showView('ProgressView', 'nav-progress')" class="text-sm text-nakngaji-primary hover:underline font-medium">View Report</button>
+                            <button onclick="showView('ProgressView', 'nav-progress')" class="text-[10px] font-black bg-nakngaji-primary text-white px-4 py-2 rounded-xl uppercase tracking-widest shadow-md">View Log</button>
                         </div>
-
-                        <div class="p-4 border-l-4 border-gray-400 bg-white rounded-lg shadow-sm flex justify-between items-center">
+                        <div class="p-5 bg-gray-50 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:scale-[1.02] duration-300">
                             <div>
-                                <p class="font-bold text-gray-900">Booking Confirmation</p>
-                                <p class="text-sm text-gray-700">New slot confirmed for Tuesday, 9:00 PM with Ustaz Danish.</p>
+                                <p class="font-black text-gray-900 text-lg">Siti Aminah</p>
+                                <p class="text-xs font-bold text-nakngaji-primary uppercase tracking-tighter">Level: Iqra' 2</p>
                             </div>
-                            <button onclick="showView('PaymentHistoryView', 'nav-payment')" class="text-sm text-nakngaji-primary hover:underline font-medium">View Invoice</button>
+                            <button onclick="showView('ProgressView', 'nav-progress')" class="text-[10px] font-black bg-nakngaji-primary text-white px-4 py-2 rounded-xl uppercase tracking-widest shadow-md">View Log</button>
                         </div>
                     </div>
-                    
-                    <div class="mt-8 pt-6 border-t flex justify-end">
-                        <button onclick="showView('BookClassView', 'nav-book')" class="bg-nakngaji-primary text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-nakngaji-dark transition duration-150 ease-in-out flex items-center">
-                            Book Another Class
-                            <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
-                        </button>
-                    </div>
-
                 </div>
 
-                <!-- ---------------------------------------------------------------------------------- -->
                 <!-- 1. BOOK NEW CLASS VIEW -->
-                <!-- ---------------------------------------------------------------------------------- -->
                 <div id="BookClassView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">New Class Booking & Enrollment</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">New Class Booking</h2>
                     
-                    <!-- Status Bar Mock -->
-                    <div id="booking-status" class="flex items-center justify-between bg-nakngaji-light text-nakngaji-primary p-4 rounded-lg mb-6 shadow-inner">
+                    <div id="booking-status" class="flex items-center justify-between bg-nakngaji-light text-nakngaji-primary p-4 rounded-lg mb-6 shadow-inner transition-all duration-300 border border-nakngaji-primary/10">
                         <div class="flex items-center">
-                            <i data-lucide="info" class="w-5 h-5 mr-3"></i>
-                            <p class="font-medium">Booking Status: Select Program <span class="text-gray-500 ml-2 text-sm">(Step 1 of 3)</span></p>
+                            <i data-lucide="info" id="status-icon" class="w-5 h-5 mr-3"></i>
+                            <p id="status-text" class="font-bold text-sm tracking-tight">Booking Status: Select Child & Program <span class="text-gray-400 ml-2 text-xs font-medium uppercase tracking-widest">(Step 1 of 3)</span></p>
                         </div>
-                        <span class="font-semibold">PENDING</span>
+                        <span id="status-badge" class="font-black text-[10px] bg-white/50 px-2 py-1 rounded uppercase tracking-tighter">Pending Selection</span>
                     </div>
 
-                    <!-- Program Selection Mock -->
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">1. Select Program Level</h3>
+                    <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4">1. Assign Student</h3>
+                    <div class="mb-8 p-6 bg-gray-50 rounded-3xl border-2 border-gray-100">
+                        <select id="booking-child-selector" onchange="updateBookingChild()" class="w-full md:w-80 border-2 border-gray-200 rounded-2xl px-5 py-4 bg-white focus:border-nakngaji-primary outline-none transition font-black text-gray-800 shadow-sm appearance-none cursor-pointer">
+                            <option value="">-- Choose a Child --</option>
+                            <option value="Ahmad Zaki">Ahmad Zaki</option>
+                            <option value="Siti Aminah">Siti Aminah</option>
+                        </select>
+                        <p class="text-[10px] text-gray-400 mt-3 ml-1 font-bold italic">*Please assign which child will be attending this session.</p>
+                    </div>
+
+                    <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4">2. Choose Program</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        
-                        <!-- Program Card 1: Foundational -->
-                        <div id="program-iqra" onclick="selectProgram('Iqra\' (Foundational)', 150.00, this)" class="program-card p-5 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-nakngaji-primary transition">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <i data-lucide="library" class="w-6 h-6 text-nakngaji-primary"></i>
-                                <span class="font-bold text-lg text-nakngaji-primary">Foundational (Iqra')</span>
+                        <div id="program-iqra" onclick="selectProgram('Iqra\' (Foundational)', 150.00, this)" class="program-card p-6 border-2 border-gray-200 rounded-3xl cursor-pointer shadow-sm transition transform hover:scale-[1.02] active:scale-95 bg-white group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="p-2 bg-gray-50 rounded-xl group-hover:bg-nakngaji-light transition"><i data-lucide="library" class="w-6 h-6 text-nakngaji-primary"></i></div>
+                                <span class="font-black text-lg text-gray-800 tracking-tighter">Iqra'</span>
                             </div>
-                            <p class="text-sm text-gray-600">Perfect for beginners and basic literacy. Focuses on recognition and pronunciation.</p>
-                            <p class="mt-2 text-sm font-semibold">RM 150.00 / Month</p>
+                            <p class="text-xs text-gray-500 leading-relaxed font-medium mb-4">Foundational literacy and basic recognition.</p>
+                            <p class="text-sm font-black text-nakngaji-primary tracking-tighter">RM 150.00 / Mo</p>
                         </div>
-
-                        <!-- Program Card 2: Advanced -->
-                        <div id="program-tajwid" onclick="selectProgram('Al-Quran & Tajwid', 220.00, this)" class="program-card p-5 border border-gray-200 rounded-xl cursor-pointer hover:border-nakngaji-primary transition">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <i data-lucide="graduation-cap" class="w-6 h-6 text-gray-600"></i>
-                                <span class="font-bold text-lg text-gray-800">Al-Quran & Tajwid</span>
+                        <div id="program-tajwid" onclick="selectProgram('Al-Quran & Tajwid', 220.00, this)" class="program-card p-6 border-2 border-gray-200 rounded-3xl cursor-pointer transition transform hover:scale-[1.02] active:scale-95 bg-white group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="p-2 bg-gray-50 rounded-xl group-hover:bg-nakngaji-light transition"><i data-lucide="graduation-cap" class="w-6 h-6 text-gray-400 group-hover:text-nakngaji-primary"></i></div>
+                                <span class="font-black text-lg text-gray-800 tracking-tighter">Al-Quran</span>
                             </div>
-                            <p class="text-sm text-gray-600">Advanced recitation with focus on proper Tajwid and Makhraj rules.</p>
-                            <p class="mt-2 text-sm font-semibold">RM 220.00 / Month</p>
+                            <p class="text-xs text-gray-500 leading-relaxed font-medium mb-4">Advanced recitation and rules.</p>
+                            <p class="text-sm font-black text-nakngaji-primary tracking-tighter">RM 220.00 / Mo</p>
                         </div>
-
-                        <!-- Program Card 3: Islamic Studies -->
-                        <div id="program-farduain" onclick="selectProgram('Fardu Ain & Fekah', 180.00, this)" class="program-card p-5 border border-gray-200 rounded-xl cursor-pointer hover:border-nakngaji-primary transition">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <i data-lucide="target" class="w-6 h-6 text-gray-600"></i>
-                                <span class="font-bold text-lg text-gray-800">Fardu Ain & Fekah</span>
+                        <div id="program-farduain" onclick="selectProgram('Fardu Ain & Fekah', 180.00, this)" class="program-card p-6 border-2 border-gray-200 rounded-3xl cursor-pointer transition transform hover:scale-[1.02] active:scale-95 bg-white group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="p-2 bg-gray-50 rounded-xl group-hover:bg-nakngaji-light transition"><i data-lucide="target" class="w-6 h-6 text-gray-400 group-hover:text-nakngaji-primary"></i></div>
+                                <span class="font-black text-lg text-gray-800 tracking-tighter">Fardu Ain</span>
                             </div>
-                            <p class="text-sm text-gray-600">General Islamic knowledge, prayer practice, and essential duties.</p>
-                            <p class="mt-2 text-sm font-semibold">RM 180.00 / Month</p>
-                        </div>
-
-                    </div>
-
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">2. Find Available Slots</h3>
-                    
-                    <!-- Mock Calendar/Time Selection -->
-                    <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-lg font-medium text-gray-700">Week of October 23 - 29</span>
-                            <div class="flex space-x-2">
-                                <button class="p-2 border rounded-lg hover:bg-gray-200"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                                <button class="p-2 border rounded-lg hover:bg-gray-200"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
-                            </div>
-                        </div>
-                        
-                        <!-- Time Slots Table Mock -->
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead>
-                                    <tr class="bg-gray-100">
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monday</th>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tuesday</th>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wednesday</th>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thursday</th>
-                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Friday</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-3 py-3 whitespace-nowrap font-medium text-gray-900">10:00 AM</td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <span class="text-xs text-gray-400">Not Offered</span>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <button onclick="selectSlotAndProceed('24 Oct, 10:00 AM, Ustazah Zarith', 150.00)" class="btn-select-slot bg-nakngaji-primary text-white text-xs px-2 py-1 rounded shadow-md hover:bg-nakngaji-dark">Available (Ustazah Zarith)</button>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <span class="text-xs text-red-500">Not Available</span>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <button onclick="selectSlotAndProceed('26 Oct, 10:00 AM, Ustaz Naqib', 150.00)" class="btn-select-slot bg-nakngaji-primary text-white text-xs px-2 py-1 rounded shadow-md hover:bg-nakngaji-dark">Available (Ustaz Naqib)</button>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <span class="text-xs text-gray-400">Not Offered</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-3 py-3 whitespace-nowrap font-medium text-gray-900">8:00 PM</td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <button onclick="selectSlotAndProceed('23 Oct, 8:00 PM, Ustaz Naqib', 150.00)" class="btn-select-slot bg-nakngaji-primary text-white text-xs px-2 py-1 rounded shadow-md hover:bg-nakngaji-dark">Available (Ustaz Naqib)</button>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <span class="text-xs text-red-500">Not Available</span>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <button onclick="selectSlotAndProceed('25 Oct, 8:00 PM, Ustazah Ameen', 150.00)" class="btn-select-slot bg-nakngaji-primary text-white text-xs px-2 py-1 rounded shadow-md hover:bg-nakngaji-dark">Available (Ustazah Ameen)</button>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <span class="text-xs text-gray-400">Not Offered</span>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <button onclick="selectSlotAndProceed('27 Oct, 8:00 PM, Ustaz Danish', 150.00)" class="btn-select-slot bg-nakngaji-primary text-white text-xs px-2 py-1 rounded shadow-md hover:bg-nakngaji-dark">Available (Ustaz Danish)</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-3 py-3 whitespace-nowrap font-medium text-gray-900">9:00 PM</td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <span class="text-xs text-gray-400">Not Offered</span>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <button onclick="selectSlotAndProceed('24 Oct, 9:00 PM, Ustaz Danish', 150.00)" class="btn-select-slot bg-nakngaji-primary text-white text-xs px-2 py-1 rounded shadow-md hover:bg-nakngaji-dark">Available (Ustaz Danish)</button>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <span class="text-xs text-red-500">Not Available</span>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <button onclick="selectSlotAndProceed('26 Oct, 9:00 PM, Ustazah Zarith', 150.00)" class="btn-select-slot bg-nakngaji-primary text-white text-xs px-2 py-1 rounded shadow-md hover:bg-nakngaji-dark">Available (Ustazah Zarith)</button>
-                                        </td>
-                                        <td class="px-3 py-3 whitespace-nowrap">
-                                            <span class="text-xs text-red-500">Not Available</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <p class="text-xs text-gray-500 leading-relaxed font-medium mb-4">General Islamic knowledge and duties.</p>
+                            <p class="text-sm font-black text-nakngaji-primary tracking-tighter">RM 180.00 / Mo</p>
                         </div>
                     </div>
 
-                    <!-- Action Button -->
-                    <div class="mt-8 pt-6 border-t flex justify-end">
-                        <button onclick="showPaymentPageFromBooking()" class="bg-nakngaji-primary text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-nakngaji-dark transition duration-150 ease-in-out flex items-center">
+                    <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4">3. Select Available Slot</h3>
+                    <div class="overflow-x-auto border-2 border-gray-100 rounded-3xl shadow-sm bg-white overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-100">
+                            <thead>
+                                <tr class="bg-white"> <!-- UPDATED: Header is white now -->
+                                    <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest border-r">Time</th>
+                                    <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Mon</th>
+                                    <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Tue</th>
+                                    <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Wed</th>
+                                    <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Thu</th>
+                                    <th class="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Fri</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 bg-white"> <!-- UPDATED: All rows white -->
+                                <tr>
+                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">9:00 AM</td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 9 AM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Wed, 9 AM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 9 AM, Ustazah Ameen', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">10:00 AM</td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 10 AM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Wed, 10 AM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 10 AM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">11:00 AM</td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 11 AM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 11 AM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 11 AM, Ustazah Ameen', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">2:00 PM</td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 2 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 2 PM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 2 PM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">4:00 PM</td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 4 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Wed, 4 PM, Ustazah Ameen', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 4 PM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">8:00 PM</td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 9:00 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 9:00 PM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 9:00 PM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 9:00 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-5 whitespace-nowrap font-black text-gray-800 text-sm italic border-r">9:00 PM</td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Mon, 9:00 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Tue, 9:00 PM, Ustaz Naqib', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><span class="text-[10px] text-red-500 font-black uppercase tracking-tighter">Not Available</span></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Thu, 9:00 PM, Ustazah Zarith', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                    <td class="px-6 py-5"><button onclick="highlightSlot('Fri, 9:00 PM, Ustaz Danish', 150.00, this)" class="btn-slot bg-nakngaji-primary text-white text-[10px] px-3 py-1.5 rounded-xl shadow-md font-black uppercase transition transform active:scale-90">Available</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-10 pt-8 border-t border-gray-100 flex justify-end">
+                        <button onclick="showPaymentPageFromBooking()" class="bg-nakngaji-primary text-white font-black py-4 px-10 rounded-[2rem] shadow-2xl hover:bg-nakngaji-dark transition transform active:scale-95 flex items-center uppercase tracking-widest text-sm">
                             Proceed to Payment
-                            <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
+                            <i data-lucide="arrow-right" class="w-5 h-5 ml-3"></i>
                         </button>
                     </div>
                 </div>
-                
-                <!-- ---------------------------------------------------------------------------------- -->
-                <!-- 1B. PAYMENT CONFIRMATION VIEW (New) -->
-                <!-- ---------------------------------------------------------------------------------- -->
-                <div id="PaymentView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">3. Payment Confirmation</h2>
 
-                    <!-- Summary Card -->
-                    <div class="bg-gray-50 p-6 rounded-xl shadow-inner mb-6">
-                        <h3 class="text-xl font-semibold mb-4 text-nakngaji-primary flex items-center">
-                            <i data-lucide="clipboard-check" class="w-6 h-6 mr-2"></i>
-                            Booking Summary
-                        </h3>
-                        <dl class="space-y-2 text-gray-700">
-                            <div class="flex justify-between">
-                                <dt class="font-medium">Program Selected:</dt>
-                                <dd id="summary-program" class="font-semibold">Iqra' (Foundational)</dd>
+                <!-- 1B. PAYMENT CONFIRMATION VIEW -->
+                <div id="PaymentView" class="content-view p-8 bg-white rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">3. Payment Confirmation</h2>
+                    <div class="bg-gray-50 p-8 rounded-[2.5rem] shadow-inner mb-8 border-2 border-gray-100">
+                        <dl class="space-y-4">
+                            <div class="flex justify-between border-b border-gray-200 pb-3">
+                                <dt class="font-black text-gray-400 uppercase text-[10px] tracking-widest">Student (Child)</dt>
+                                <dd id="summary-child" class="font-black text-nakngaji-primary text-lg tracking-tighter">Ahmad Zaki</dd>
                             </div>
-                            <div class="flex justify-between">
-                                <dt class="font-medium">Selected Slot:</dt>
-                                <dd id="summary-slot" class="font-semibold">Monday, 23 Oct, 8:00 PM</dd>
+                            <div class="flex justify-between border-b border-gray-200 pb-3">
+                                <dt class="font-black text-gray-400 uppercase text-[10px] tracking-widest">Program Selected</dt>
+                                <dd id="summary-program" class="font-bold text-gray-800">Iqra' (Foundational)</dd>
                             </div>
-                            <div class="flex justify-between">
-                                <dt class="font-medium">Tutor Assigned:</dt>
-                                <dd id="summary-tutor" class="font-semibold">Ustaz Naqib</dd>
+                            <div class="flex justify-between border-b border-gray-200 pb-3">
+                                <dt class="font-black text-gray-400 uppercase text-[10px] tracking-widest">Chosen Slot</dt>
+                                <dd id="summary-slot" class="font-bold text-gray-800">Monday 8:00 PM</dd>
                             </div>
-                            <div class="flex justify-between border-t mt-4 pt-4 text-lg">
-                                <dt class="font-bold">Total Due:</dt>
-                                <dd id="summary-amount" class="font-extrabold text-green-600">RM 150.00</dd>
+                            <div class="flex justify-between pt-4">
+                                <dt class="font-black text-gray-800 uppercase text-xs">Total Monthly Fee</dt>
+                                <dd id="summary-amount" class="font-black text-nakngaji-primary text-3xl tracking-tighter">RM 150.00</dd>
                             </div>
                         </dl>
                     </div>
 
-                    <!-- Payment Method Section -->
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Select Payment Method</h3>
-                    <div class="space-y-4">
-                        <div id="payment-fpx" onclick="selectPaymentMethod('payment-fpx')" class="payment-option p-4 border border-gray-300 rounded-lg bg-white flex justify-between items-center cursor-pointer">
-                            <label class="payment-label font-medium text-gray-700 flex items-center">
-                                <input type="radio" name="paymentMethod" value="fpx" class="payment-radio mr-3 text-nakngaji-primary focus:ring-nakngaji-primary">
-                                FPX (Online Banking)
+                    <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4 ml-1">Payment Method</h3>
+                    <div class="space-y-3">
+                        <div id="payment-fpx" onclick="selectPaymentMethod('payment-fpx')" class="payment-option p-5 border-2 border-nakngaji-primary rounded-2xl bg-nakngaji-light/10 flex justify-between items-center cursor-pointer transition">
+                            <label class="payment-label font-black text-gray-800 flex items-center cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="fpx" class="payment-radio mr-4 w-6 h-6 accent-nakngaji-primary" checked>
+                                FPX Online Banking
                             </label>
-                            <img src="https://placehold.co/80x20/F0F9FF/000?text=FPX+Logo" alt="FPX" class="rounded">
+                            <i data-lucide="landmark" class="w-6 h-6 text-nakngaji-primary opacity-50"></i>
                         </div>
-                        <div id="payment-card" onclick="selectPaymentMethod('payment-card')" class="payment-option p-4 border border-gray-300 rounded-lg bg-white flex justify-between items-center cursor-pointer">
-                            <label class="payment-label font-medium text-gray-700 flex items-center">
-                                <input type="radio" name="paymentMethod" value="card" class="payment-radio mr-3 text-nakngaji-primary focus:ring-nakngaji-primary">
-                                Credit/Debit Card
+                        <div id="payment-card" onclick="selectPaymentMethod('payment-card')" class="payment-option p-5 border-2 border-gray-100 rounded-2xl bg-white flex justify-between items-center cursor-pointer transition hover:border-nakngaji-primary/30">
+                            <label class="payment-label font-black text-gray-500 flex items-center cursor-pointer transition">
+                                <input type="radio" name="paymentMethod" value="card" class="payment-radio mr-4 w-6 h-6 accent-nakngaji-primary">
+                                Debit / Credit Card
                             </label>
-                            <img src="https://placehold.co/80x20/F0F9FF/000?text=Visa+Master" alt="Card Logos" class="rounded">
+                            <i data-lucide="credit-card" class="w-6 h-6 text-gray-300"></i>
+                        </div>
+                        <div id="payment-qr" onclick="selectPaymentMethod('payment-qr')" class="payment-option p-5 border-2 border-gray-100 rounded-2xl bg-white flex justify-between items-center cursor-pointer transition hover:border-nakngaji-primary/30">
+                            <label class="payment-label font-black text-gray-500 flex items-center cursor-pointer transition">
+                                <input type="radio" name="paymentMethod" value="qr" class="payment-radio mr-4 w-6 h-6 accent-nakngaji-primary">
+                                QR Code (TNG / DuitNow)
+                            </label>
+                            <i data-lucide="qr-code" class="w-6 h-6 text-gray-300"></i>
                         </div>
                     </div>
 
-                    <div class="mt-8 pt-6 border-t flex justify-between items-center">
-                        <button onclick="showView('BookClassView', 'nav-book')" class="text-gray-600 hover:text-nakngaji-dark transition duration-150 ease-in-out flex items-center">
-                            <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
-                            Back to Schedule
+                    <div class="mt-10 flex flex-col md:flex-row justify-end space-y-4 md:space-y-0 md:space-x-4">
+                        <button onclick="showView('BookClassView', 'nav-book')" class="bg-gray-100 text-gray-400 font-black py-4 px-10 rounded-2xl border-2 border-gray-200 hover:bg-gray-200 transition uppercase text-xs tracking-widest active:scale-95">
+                            Cancel Booking
                         </button>
-                        <button onclick="mockPaymentSuccess()" class="bg-green-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:bg-green-700 transition duration-150 ease-in-out flex items-center">
-                            Pay Now (RM 150.00)
-                            <i data-lucide="lock" class="w-5 h-5 ml-2"></i>
+                        <button onclick="mockPaymentSuccess()" class="bg-green-600 text-white font-black py-5 px-14 rounded-3xl shadow-2xl hover:bg-green-700 transition transform hover:scale-105 active:scale-95 uppercase tracking-widest text-sm">
+                            Confirm and Pay
                         </button>
                     </div>
                 </div>
 
-                <!-- ---------------------------------------------------------------------------------- -->
                 <!-- 2. STUDENT PROGRESS VIEW -->
-                <!-- ---------------------------------------------------------------------------------- -->
                 <div id="ProgressView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Student Progress Tracking</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">Learning Milestones</h2>
                     
-                    <div class="bg-nakngaji-light text-nakngaji-primary p-4 rounded-lg mb-6 shadow-inner font-medium">
-                        <i data-lucide="award" class="w-5 h-5 mr-2 inline-block"></i>
-                        Student: **Ahmad Zaki** (ID: 10045) | Current Level: **Iqra' Book 4**
+                    <div class="mb-10 p-8 bg-gray-50 rounded-[2.5rem] border-2 border-gray-100 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 shadow-inner">
+                        <div class="flex items-center space-x-3">
+                            <i data-lucide="filter" class="text-nakngaji-primary w-6 h-6"></i>
+                            <span class="font-black text-gray-400 uppercase text-[10px] tracking-[0.2em]">Filter logs by Student:</span>
+                        </div>
+                        <select id="child-progress-selector" onchange="updateProgressContent()" class="w-full md:w-64 border-2 border-gray-200 rounded-2xl px-6 py-4 bg-white focus:border-nakngaji-primary outline-none transition font-black text-gray-800 shadow-sm appearance-none cursor-pointer text-sm">
+                            <option value="zaki">Ahmad Zaki</option>
+                            <option value="aminah">Siti Aminah</option>
+                        </select>
                     </div>
 
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Learning Milestones History</h3>
-                    <div class="space-y-4">
-                        
-                        <!-- Milestone 1 -->
-                        <div class="p-4 border-l-4 border-nakngaji-primary bg-gray-50 rounded-lg shadow-sm">
-                            <p class="font-bold text-gray-900">Milestone Achieved (15 Oct 2024)</p>
-                            <p class="text-nakngaji-primary font-medium my-1">Completed: **Iqra' Book 3, Page 22**</p>
-                            <p class="text-sm text-gray-600 italic">"Zaki shows excellent progress in identifying basic tanwin. Focusing next on 'mad asli'." - Ustaz Naqib</p>
-                        </div>
-
-                        <!-- Milestone 2 -->
-                        <div class="p-4 border-l-4 border-gray-400 bg-white rounded-lg shadow-sm">
-                            <p class="font-bold text-gray-900">Milestone Achieved (28 Sep 2024)</p>
-                            <p class="text-gray-700 font-medium my-1">Completed: **Iqra' Book 2** (Successfully promoted to Iqra' 3)</p>
-                            <p class="text-sm text-gray-600 italic">"Promoted! Keep practicing the letters with Shaddah." - Ustaz Ameen</p>
-                        </div>
-
-                         <!-- Milestone 3 -->
-                        <div class="p-4 border-l-4 border-gray-400 bg-white rounded-lg shadow-sm">
-                            <p class="font-bold text-gray-900">Milestone Achieved (10 Sep 2024)</p>
-                            <p class="text-gray-700 font-medium my-1">Completed: **Iqra' Book 1**</p>
-                            <p class="text-sm text-gray-600 italic">"Excellent letter recognition." - Ustaz Danish"</p>
-                        </div>
-
+                    <div id="progress-container" class="space-y-8">
+                        <!-- Dynamic logs loaded via JS -->
                     </div>
                 </div>
 
-                <!-- ---------------------------------------------------------------------------------- -->
                 <!-- 3. PAYMENT HISTORY VIEW -->
-                <!-- ---------------------------------------------------------------------------------- -->
                 <div id="PaymentHistoryView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6">Payment History and Invoices</h2>
-
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Recent Transactions</h3>
-                    
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice ID</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Paid</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-6 tracking-tighter">Transaction History</h2>
+                    <div class="overflow-x-auto border-2 border-gray-50 rounded-[2rem] shadow-sm overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-100">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Billing Date</th>
+                                    <th class="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
+                                    <th class="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <!-- Transaction 1 -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3 whitespace-nowrap font-medium text-nakngaji-primary">INV-202410-003</td>
-                                    <td class="px-4 py-3 whitespace-nowrap">20 Oct 2024</td>
-                                    <td class="px-4 py-3 whitespace-nowrap">Monthly Fee - Iqra' (Nov 2024)</td>
-                                    <td class="px-4 py-3 whitespace-nowrap font-bold text-green-600">RM 150.00</td>
-                                    <td class="px-4 py-3 whitespace-nowrap"><span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">Paid</span></td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <button class="text-nakngaji-primary hover:underline text-sm">Download</button>
-                                    </td>
-                                </tr>
-                                <!-- Transaction 2 -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3 whitespace-nowrap font-medium text-nakngaji-primary">INV-202409-002</td>
-                                    <td class="px-4 py-3 whitespace-nowrap">25 Sep 2024</td>
-                                    <td class="px-4 py-3 whitespace-nowrap">Monthly Fee - Iqra' (Oct 2024)</td>
-                                    <td class="px-4 py-3 whitespace-nowrap font-bold text-green-600">RM 150.00</td>
-                                    <td class="px-4 py-3 whitespace-nowrap"><span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">Paid</span></td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <button class="text-nakngaji-primary hover:underline text-sm">Download</button>
-                                    </td>
-                                </tr>
-                                <!-- Transaction 3 (Pending/Failed Mock) -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3 whitespace-nowrap font-medium text-nakngaji-primary">INV-202411-004</td>
-                                    <td class="px-4 py-3 whitespace-nowrap">15 Nov 2024 (Due)</td>
-                                    <td class="px-4 py-3 whitespace-nowrap">Monthly Fee - Al-Quran (Dec 2024)</td>
-                                    <td class="px-4 py-3 whitespace-nowrap font-bold text-red-600">RM 220.00</td>
-                                    <td class="px-4 py-3 whitespace-nowrap"><span class="bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full">Pending</span></td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <button class="bg-nakngaji-primary text-white text-xs px-3 py-1 rounded-full hover:bg-nakngaji-dark transition">Pay Now</button>
+                            <tbody class="bg-white divide-y divide-gray-50">
+                                <tr class="hover:bg-gray-50 transition duration-300">
+                                    <td class="px-8 py-6 whitespace-nowrap text-sm text-gray-600 font-bold tracking-tight">20 Oct 2024</td>
+                                    <td class="px-8 py-6 whitespace-nowrap text-sm font-black text-gray-900 tracking-tighter text-lg">RM 150.00</td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <span class="bg-green-100 text-green-700 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">Paid Successfully</span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -486,89 +467,104 @@
                     </div>
                 </div>
 
-                <!-- ---------------------------------------------------------------------------------- -->
                 <!-- 4. MANAGE PROFILE VIEW -->
-                <!-- ---------------------------------------------------------------------------------- -->
-                 <div id="ProfileView" class="content-view p-8 bg-white rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-8">Manage Profile & Account</h2>
+                <div id="ProfileView" class="content-view p-8 bg-white rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-10 tracking-tighter">Manage Profile & Account</h2>
 
-                    <div class="space-y-10">
-                        <!-- 1. Parent Data -->
+                    <div class="space-y-16">
+                        <!-- Parent Information Section -->
                         <section>
-                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <i data-lucide="user-check" class="text-nakngaji-primary mr-2"></i> Parent Information
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center tracking-tighter">
+                                <i data-lucide="user-check" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Parent Information
                             </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-gray-50 rounded-2xl border">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-10 bg-gray-50 rounded-[3rem] border border-gray-200 shadow-inner transition hover:shadow-lg">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase">Full Name</label>
-                                    <input type="text" value="Ahmad bin Kassim" class="w-full mt-1 p-2 border-b bg-transparent outline-none focus:border-nakngaji-primary transition">
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1 tracking-[0.2em]">Full Name</label>
+                                    <input type="text" value="Ahmad bin Kassim" class="w-full p-4 border-2 border-gray-200 rounded-[1.25rem] bg-white outline-none focus:border-nakngaji-primary transition font-bold text-gray-800 shadow-sm text-lg">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase">Phone Number</label>
-                                    <input type="text" value="+60123456789" class="w-full mt-1 p-2 border-b bg-transparent outline-none focus:border-nakngaji-primary transition">
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1 tracking-[0.2em]">Mobile Contact</label>
+                                    <input type="text" value="+60123456789" class="w-full p-4 border-2 border-gray-200 rounded-[1.25rem] bg-white outline-none focus:border-nakngaji-primary transition font-bold text-gray-800 shadow-sm text-lg">
+                                </div>
+                                <div class="md:col-span-2 flex justify-end">
+                                    <button onclick="handleProfileUpdate()" class="bg-nakngaji-primary text-white font-black py-4 px-10 rounded-[2rem] hover:opacity-90 shadow-2xl transform active:scale-95 transition uppercase tracking-widest text-sm">Update Account Data</button>
                                 </div>
                             </div>
                         </section>
 
-                        <!-- 2. Children Management (NEW) -->
+                        <!-- Children Management Section -->
                         <section>
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                                    <i data-lucide="users" class="text-nakngaji-primary mr-2"></i> Linked Children
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0 px-2">
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center tracking-tighter">
+                                    <i data-lucide="users" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Linked Students
                                 </h3>
-                                <button onclick="toggleAddChildForm()" class="bg-nakngaji-primary text-white font-bold py-1.5 px-4 rounded-lg shadow-md hover:bg-nakngaji-dark transition text-sm flex items-center">
-                                    <i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i> Add More Child
+                                <button onclick="toggleAddChildForm()" class="bg-nakngaji-primary text-white font-black py-3 px-8 rounded-2xl shadow-xl hover:bg-nakngaji-dark transition flex items-center text-[10px] uppercase tracking-[0.2em] transform active:scale-95">
+                                    <i data-lucide="plus-circle" class="w-5 h-5 mr-2"></i> Add More Child
                                 </button>
                             </div>
 
-                            <!-- List of current children -->
-                            <div id="child-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="flex items-center justify-between p-4 border rounded-xl bg-white hover:border-nakngaji-primary transition group shadow-sm">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="bg-nakngaji-light p-2 rounded-lg"><i data-lucide="smile" class="text-nakngaji-primary w-5 h-5"></i></div>
+                            <div id="child-list" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Child 1 -->
+                                <div class="flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group">
+                                    <div class="flex items-center space-x-5">
+                                        <div class="bg-nakngaji-light p-5 rounded-[1.5rem] text-nakngaji-primary font-black shadow-inner text-xl">AZ</div>
                                         <div>
-                                            <p class="font-bold text-gray-800">Ahmad Zaki</p>
-                                            <p class="text-xs text-gray-500 italic">Iqra' Foundational</p>
+                                            <p class="font-black text-gray-800 text-2xl tracking-tighter">Ahmad Zaki</p>
+                                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70">Status: Level 4 Foundational</p>
                                         </div>
                                     </div>
-                                    <button class="text-gray-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    <button class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
                                 </div>
-                                <div class="flex items-center justify-between p-4 border rounded-xl bg-white hover:border-nakngaji-primary transition group shadow-sm">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="bg-nakngaji-light p-2 rounded-lg"><i data-lucide="smile" class="text-nakngaji-primary w-5 h-5"></i></div>
+                                <!-- Child 2 -->
+                                <div class="flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group">
+                                    <div class="flex items-center space-x-5">
+                                        <div class="bg-nakngaji-light p-5 rounded-[1.5rem] text-nakngaji-primary font-black shadow-inner text-xl">SA</div>
                                         <div>
-                                            <p class="font-bold text-gray-800">Siti Aminah</p>
-                                            <p class="text-xs text-gray-500 italic">Al-Quran & Tajwid</p>
+                                            <p class="font-black text-gray-800 text-2xl tracking-tighter">Siti Aminah</p>
+                                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70">Status: Level 2 Foundational</p>
                                         </div>
                                     </div>
-                                    <button class="text-gray-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    <button class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
                                 </div>
                             </div>
 
-                            <!-- Hidden Form to Add New Child -->
-                            <div id="add-child-form" class="mt-6 hidden p-6 border-2 border-dashed border-nakngaji-primary rounded-2xl bg-nakngaji-light/10">
-                                <h4 class="font-bold text-gray-700 mb-4">Register New Student</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" id="new-child-name" placeholder="Enter Child's Name" class="p-2 border rounded-lg focus:ring-2 ring-nakngaji-primary outline-none">
-                                    <select id="new-child-level" class="p-2 border rounded-lg focus:ring-2 ring-nakngaji-primary outline-none bg-white">
-                                        <option value="Iqra'">Iqra' (Foundational)</option>
-                                        <option value="Quran">Al-Quran & Tajwid</option>
-                                    </select>
+                            <!-- Registration Form (Hidden) -->
+                            <div id="add-child-form" class="mt-12 hidden p-10 border-2 border-dashed border-nakngaji-primary rounded-[3rem] bg-nakngaji-light/10 shadow-inner">
+                                <h4 class="font-black text-gray-800 mb-8 flex items-center uppercase text-xs tracking-widest">
+                                    <i data-lucide="sparkles" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Link New Student Account
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-gray-400 uppercase mb-3 ml-1 tracking-widest">Student Full Name</label>
+                                        <input type="text" id="new-child-name" placeholder="Enter Full Name" class="w-full p-5 border-2 border-gray-200 rounded-3xl focus:ring-4 ring-nakngaji-primary/10 focus:border-nakngaji-primary outline-none transition font-black text-gray-800 shadow-sm text-lg">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-gray-400 uppercase mb-3 ml-1 tracking-widest">Initial Program Level</label>
+                                        <select id="new-child-level" class="w-full p-5 border-2 border-gray-200 rounded-3xl focus:ring-4 ring-nakngaji-primary/10 focus:border-nakngaji-primary outline-none transition bg-white font-black text-gray-800 shadow-sm cursor-pointer appearance-none text-lg">
+                                            <option value="Iqra' (Foundational)">Iqra' (Foundational)</option>
+                                            <option value="Al-Quran & Tajwid">Al-Quran & Tajwid</option>
+                                            <option value="Fardu Ain & Fekah">Islamic Studies (Fardu Ain)</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="mt-4 flex space-x-2">
-                                    <button onclick="confirmAddChild()" class="bg-nakngaji-primary text-white px-6 py-2 rounded-lg font-bold shadow transition">Add to Account</button>
-                                    <button onclick="toggleAddChildForm()" class="bg-gray-400 text-white px-6 py-2 rounded-lg font-bold shadow transition">Cancel</button>
+                                <div class="mt-10 flex space-x-6">
+                                    <button onclick="confirmAddChild()" class="flex-1 bg-nakngaji-primary text-white font-black py-5 rounded-[2rem] shadow-2xl hover:opacity-90 transition transform active:scale-95 uppercase tracking-widest text-sm">Register & Link</button>
+                                    <button onclick="toggleAddChildForm()" class="px-12 bg-white text-gray-400 font-black border-2 border-gray-100 rounded-[2rem] hover:bg-gray-50 transition uppercase text-xs tracking-widest">Cancel</button>
                                 </div>
                             </div>
                         </section>
 
-                        <!-- 3. Security -->
+                        <!-- Security Section -->
                         <section>
-                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <i data-lucide="shield-check" class="text-nakngaji-primary mr-2"></i> Security & Password
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center tracking-tighter">
+                                <i data-lucide="shield-check" class="text-nakngaji-primary mr-3 w-6 h-6"></i> Account Security
                             </h3>
-                            <div class="p-6 bg-white rounded-2xl border shadow-sm">
-                                <button class="text-nakngaji-primary font-bold hover:underline">Change Account Password</button>
+                            <div class="p-10 bg-white rounded-[3rem] border-2 border-gray-100 shadow-sm flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 transition hover:shadow-md">
+                                <div class="text-center md:text-left">
+                                    <p class="font-black text-gray-700 tracking-tight text-xl">Login Credentials</p>
+                                    <p class="text-xs text-gray-400 font-bold uppercase tracking-tighter mt-1">Update your password to keep your account safe and secure.</p>
+                                </div>
+                                <button class="bg-gray-900 text-white font-black py-4 px-12 rounded-[2rem] shadow-xl hover:bg-black transition transform active:scale-95 uppercase text-xs tracking-[0.2em]">Change Password</button>
                             </div>
                         </section>
                     </div>
@@ -579,178 +575,213 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-6 mt-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
-            &copy; 2024 NakNgaji Booking System. Developed by 4GL Team.
+    <footer class="bg-gray-900 text-white py-16 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center items-center space-x-4 mb-8">
+                <span class="text-nakngaji-primary font-black text-2xl tracking-tighter italic">NakNgaji</span>
+                <span class="w-1.5 h-1.5 bg-gray-700 rounded-full"></span>
+                <span class="text-[10px] uppercase font-black tracking-[0.5em] text-gray-500">Global Learning Portal</span>
+            </div>
+            <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">&copy; 2024 Developed by 4GL Team. Empowering Quranic Literacy Worldwide.</p>
         </div>
     </footer>
 
-    <!-- JavaScript for View Switching and Booking Logic -->
+    <!-- JavaScript Core -->
     <script>
-        // Global state for booking summary
+        // Global state tracking
         let currentBooking = {
-            program: "Iqra' (Foundational)",
-            slot: "Monday, 23 Oct, 8:00 PM",
-            tutor: "Ustaz Naqib",
-            amount: 150.00
+            child: null,
+            program: null,
+            slot: null,
+            amount: 0
         };
 
-        // Function to switch between content views
-        function showView(viewId, navLinkId) {
-            // Hide all views
-            document.querySelectorAll('.content-view').forEach(view => {
-                view.style.display = 'none';
-            });
-            // Remove active class from all links
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('nav-active');
-            });
-
-            // Show selected view and set active link
-            const selectedView = document.getElementById(viewId);
-            const selectedLink = document.getElementById(navLinkId);
-            
-            if (selectedView) {
-                selectedView.style.display = 'block';
-                // Re-initialize lucide icons for the new content
-                lucide.createIcons();
-            }
-            if (selectedLink) {
-                selectedLink.classList.add('nav-active');
-            }
-        }
-        
-        // Function to toggle the profile dropdown menu
-        function toggleProfileMenu() {
-            const menu = document.getElementById('profile-menu');
-            menu.classList.toggle('hidden');
-        }
-
-        // Mock sign out function
-        function mockSignOut() {
-            toggleProfileMenu(); // Hide menu
-            if (confirm("Are you sure you want to sign out?")) {
-                alert("Signing out... Redirecting to Login Page.");
-                // In a real application, this would clear session and redirect.
-                window.location.href = 'index.html'; 
-            }
-        }
-
-        // MOCK Function to select a program (visually only for this mockup)
-        function selectProgram(programName, amount, element) {
-            currentBooking.program = programName;
-            currentBooking.amount = amount;
-
-            // Simple visual feedback
-            document.querySelectorAll('.program-card').forEach(card => {
-                card.classList.remove('border-nakngaji-primary', 'bg-nakngaji-light');
-                card.classList.add('border-gray-200');
-            });
-
-            const selectedCard = element; // Use the element passed by the onclick handler
-            if (selectedCard) {
-                selectedCard.classList.add('border-nakngaji-primary', 'bg-nakngaji-light');
-                selectedCard.classList.remove('border-gray-200');
-            }
-
-            document.getElementById('booking-status').innerHTML = `
-                <div class="flex items-center">
-                    <i data-lucide="info" class="w-5 h-5 mr-3"></i>
-                    <p class="font-medium">Booking Status: Slot Selected <span class="text-gray-500 ml-2 text-sm">(Step 2 of 3)</span></p>
-                </div>
-                <span class="font-semibold">${programName} Selected</span>
-            `;
+        // UI View Controller
+        function showView(viewId, navId) {
+            document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('nav-active'));
+            const targetView = document.getElementById(viewId);
+            const targetNav = document.getElementById(navId);
+            if (targetView) targetView.style.display = 'block';
+            if (targetNav) targetNav.classList.add('nav-active');
+            if (viewId === 'ProgressView') updateProgressContent();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
         }
-        
-        // Function to handle visual and data selection of payment method
-        function selectPaymentMethod(selectedId) {
-            document.querySelectorAll('.payment-option').forEach(option => {
-                // Reset classes for all options
-                option.classList.remove('border-nakngaji-primary', 'bg-nakngaji-light');
-                option.classList.add('border-gray-300', 'bg-white');
 
-                // Reset text color and uncheck radio
-                const label = option.querySelector('.payment-label');
-                const radio = option.querySelector('.payment-radio');
-                
-                label.classList.remove('text-nakngaji-primary');
-                label.classList.add('text-gray-700');
-                if (radio) radio.checked = false;
-            });
+        // --- SUCCESS ANIMATION LOGIC ---
 
-            // Apply active classes to the selected option
-            const selectedOption = document.getElementById(selectedId);
-            if (selectedOption) {
-                selectedOption.classList.add('border-nakngaji-primary', 'bg-nakngaji-light');
-                selectedOption.classList.remove('border-gray-300', 'bg-white');
+        function showProcessSuccess(title, message) {
+            const modal = document.getElementById('success-notification');
+            document.getElementById('notification-title').innerText = title;
+            document.getElementById('notification-message').innerText = message;
+            
+            modal.classList.remove('hidden');
+            
+            // Auto-hide after 2.5 seconds
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 2500);
+        }
 
-                // Set primary text color and check radio
-                const label = selectedOption.querySelector('.payment-label');
-                const radio = selectedOption.querySelector('.payment-radio');
+        // --- BOOKING LOGIC ---
 
-                label.classList.add('text-nakngaji-primary');
-                label.classList.remove('text-gray-700');
-                if (radio) radio.checked = true;
+        function updateBookingChild() {
+            const child = document.getElementById('booking-child-selector').value;
+            currentBooking.child = child;
+            
+            if (child) {
+                document.getElementById('status-text').innerHTML = `Booking Status: Student <span class="text-nakngaji-primary font-bold tracking-tighter">${child}</span> Selected <span class="text-gray-400 ml-2 text-xs font-medium uppercase tracking-widest">(Step 1 of 3)</span>`;
+            } else {
+                document.getElementById('status-text').innerHTML = `Booking Status: Select Child & Program <span class="text-gray-400 ml-2 text-xs font-medium uppercase tracking-widest">(Step 1 of 3)</span>`;
             }
         }
 
-        // Function to select a slot and prepare for payment
-        function selectSlotAndProceed(slotDetails, amount) {
-            // Update the global booking state
-            const details = slotDetails.split(', ');
-            currentBooking.slot = `${details[0]}, ${details[1]}`;
-            currentBooking.tutor = details[2];
-            currentBooking.amount = amount; // Assuming the amount might be adjusted later based on slot/tutor
-
-            // Update Payment View summary
-            document.getElementById('summary-program').textContent = currentBooking.program;
-            document.getElementById('summary-slot').textContent = currentBooking.slot;
-            document.getElementById('summary-tutor').textContent = currentBooking.tutor;
-            document.getElementById('summary-amount').textContent = `RM ${currentBooking.amount.toFixed(2)}`;
+        function selectProgram(name, price, element) {
+            document.querySelectorAll('.program-card').forEach(c => {
+                c.classList.remove('border-nakngaji-primary', 'bg-nakngaji-light/30', 'shadow-md');
+                c.classList.add('border-gray-200', 'bg-white');
+            });
+            element.classList.add('border-nakngaji-primary', 'bg-nakngaji-light/30', 'shadow-md');
+            element.classList.remove('border-gray-200', 'bg-white');
             
-            // Update Pay Now button text
-            document.querySelector('#PaymentView button.bg-green-600').innerHTML = `
-                Pay Now (RM ${currentBooking.amount.toFixed(2)})
-                <i data-lucide="lock" class="w-5 h-5 ml-2"></i>
-            `;
-
-            // Transition to the Payment View
-            showView('PaymentView', 'nav-book');
-            // Set default payment method visually on payment page load
-            selectPaymentMethod('payment-fpx'); 
+            currentBooking.program = name;
+            currentBooking.amount = price;
+            
+            const childText = currentBooking.child ? `Student ${currentBooking.child} | ` : '';
+            document.getElementById('status-text').innerHTML = `Booking Status: ${childText}${name} Selected <span class="text-gray-400 ml-2 text-xs font-medium uppercase tracking-widest">(Step 2 of 3)</span>`;
+            lucide.createIcons();
         }
 
-        // Function for manual click on "Proceed to Payment" button 
-        // Note: In a real app, this button would only appear after a slot selection. 
+        function highlightSlot(slot, price, element) {
+            document.querySelectorAll('.btn-slot').forEach(btn => {
+                btn.classList.remove('slot-selected');
+            });
+            element.classList.add('slot-selected');
+
+            currentBooking.slot = slot;
+
+            const childText = currentBooking.child ? `Student ${currentBooking.child} | ` : '';
+            document.getElementById('status-text').innerHTML = `Booking Status: ${childText}<span class="text-nakngaji-primary font-bold tracking-tighter">${slot}</span> Selected <span class="text-gray-400 ml-2 text-xs font-medium uppercase tracking-widest">(Step 3 of 3)</span>`;
+            document.getElementById('status-badge').innerText = "Slot Ready";
+            document.getElementById('status-badge').className = "font-black text-[10px] bg-nakngaji-primary text-white px-2 py-1 rounded uppercase tracking-tighter";
+            
+            const icon = document.getElementById('status-icon');
+            icon.setAttribute('data-lucide', 'check-circle');
+            lucide.createIcons();
+        }
+
         function showPaymentPageFromBooking() {
-             // For mock purposes, just transition.
-             selectSlotAndProceed(currentBooking.slot, currentBooking.amount);
+             if (!currentBooking.child) { alert("Please select which child will attend this session first."); return; }
+             if (!currentBooking.program) { alert("Please select a program level."); return; }
+             if (!currentBooking.slot) { alert("Please click an available slot in the schedule."); return; }
+             
+             document.getElementById('summary-child').innerText = currentBooking.child;
+             document.getElementById('summary-program').innerText = currentBooking.program;
+             document.getElementById('summary-slot').innerText = currentBooking.slot;
+             document.getElementById('summary-amount').innerText = `RM ${currentBooking.amount.toFixed(2)}`;
+             
+             showView('PaymentView', 'nav-book');
         }
 
-        // Mock payment success function
+        function selectPaymentMethod(id) {
+            document.querySelectorAll('.payment-option').forEach(o => {
+                o.classList.remove('border-nakngaji-primary', 'bg-nakngaji-light/10');
+                o.classList.add('border-gray-100');
+                o.querySelector('.payment-label').classList.replace('text-gray-800', 'text-gray-500');
+            });
+            const el = document.getElementById(id);
+            el.classList.add('border-nakngaji-primary', 'bg-nakngaji-light/10');
+            el.classList.remove('border-gray-100');
+            el.querySelector('.payment-label').classList.replace('text-gray-500', 'text-gray-800');
+            el.querySelector('input').checked = true;
+        }
+
         function mockPaymentSuccess() {
-            // In a real app, this would redirect to a gateway and return.
-            // For mock: Simulate success and redirect to progress view.
-            if (confirm(`Simulating payment of RM ${currentBooking.amount.toFixed(2)} via FPX. Click OK to confirm booking.`)) {
-                alert("Payment Successful! Your class is confirmed. Checking student progress now.");
-                showView('ProgressView', 'nav-progress');
-            }
+            showProcessSuccess("Booking Confirmed!", `Successfully booked session for ${currentBooking.child}. The update is complete.`);
+            
+            setTimeout(() => {
+                showView('HomeView', 'nav-home');
+                // Reset booking state
+                currentBooking = { child: null, program: null, slot: null, amount: 0 };
+                document.getElementById('booking-child-selector').value = "";
+                document.querySelectorAll('.program-card').forEach(c => {
+                    c.classList.remove('border-nakngaji-primary', 'bg-nakngaji-light/30', 'shadow-md');
+                    c.classList.add('border-gray-200', 'bg-white');
+                });
+                document.querySelectorAll('.btn-slot').forEach(btn => btn.classList.remove('slot-selected'));
+                document.getElementById('status-text').innerHTML = `Booking Status: Select Child & Program <span class="text-gray-400 ml-2 text-xs font-medium uppercase tracking-widest">(Step 1 of 3)</span>`;
+                document.getElementById('status-badge').innerText = "Pending Selection";
+                document.getElementById('status-badge').className = "font-black text-[10px] bg-white/50 px-2 py-1 rounded uppercase tracking-tighter";
+            }, 2500);
         }
 
-        // Initialization function
-        function initDashboard() {
-            // Initialize Lucide icons
-            lucide.createIcons();
-            // Set initial view to "Home Overview"
-            showView('HomeView', 'nav-home');
+        // --- PROFILE & CHILD LOGIC ---
 
-            // Set initial state for program selection visually:
-            // Manually find the default element and call selectProgram with it.
-            const defaultElement = document.getElementById('program-iqra');
-            if (defaultElement) {
-                selectProgram(currentBooking.program, currentBooking.amount, defaultElement);
+        function handleProfileUpdate() {
+            showProcessSuccess("Update Complete!", "Your parent account contact details have been updated successfully.");
+        }
+
+        function toggleAddChildForm() {
+            const form = document.getElementById('add-child-form');
+            form.classList.toggle('hidden');
+            if(!form.classList.contains('hidden')) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            lucide.createIcons();
+        }
+
+        function confirmAddChild() {
+            const nameInput = document.getElementById('new-child-name');
+            const levelInput = document.getElementById('new-child-level');
+            const name = nameInput.value.trim();
+            const level = levelInput.value;
+            if (!name) return alert("Error: Please provide student's full name.");
+            
+            const list = document.getElementById('child-list');
+            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            const div = document.createElement('div');
+            div.className = "flex items-center justify-between p-8 border-2 border-gray-100 rounded-[2.5rem] bg-white hover:border-nakngaji-primary transition shadow-md group animate-in fade-in slide-in-from-bottom-4 duration-500";
+            div.innerHTML = `<div class="flex items-center space-x-5"><div class="bg-nakngaji-light p-5 rounded-[1.5rem] text-nakngaji-primary font-black shadow-inner text-xl">${initials}</div><div><p class="font-black text-gray-800 text-2xl tracking-tighter">${name}</p><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70">Status: Registered (${level})</p></div></div><button class="text-gray-200 hover:text-red-500 transition-colors p-3 rounded-2xl hover:bg-red-50"><i data-lucide="trash-2" class="w-6 h-6"></i></button>`;
+            list.appendChild(div);
+            
+            // Show Success Notification
+            showProcessSuccess("Student Linked!", `${name} has been added to your account. Update completed.`);
+
+            // Add to selectors
+            const progSelector = document.getElementById('child-progress-selector');
+            const bookSelector = document.getElementById('booking-child-selector');
+            if(progSelector && bookSelector) {
+                [progSelector, bookSelector].forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = name.toLowerCase().replace(/\s/g, '');
+                    opt.text = name;
+                    s.add(opt);
+                });
             }
+
+            nameInput.value = '';
+            toggleAddChildForm();
+            lucide.createIcons();
+            const currentCount = list.children.length;
+            document.getElementById('home-child-count').innerText = currentCount + " Children";
+        }
+
+        function updateProgressContent() {
+            const childId = document.getElementById('child-progress-selector').value;
+            const container = document.getElementById('progress-container');
+            if (childId === 'zaki') {
+                container.innerHTML = `<div class="p-10 border-l-[12px] border-nakngaji-primary bg-gray-50 rounded-[3rem] shadow-sm transition hover:shadow-xl"><div class="flex justify-between items-start mb-6"><div><h4 class="font-black text-gray-900 text-3xl tracking-tighter">Ahmad Zaki</h4><p class="text-[10px] font-black text-nakngaji-primary uppercase tracking-[0.25em] mt-2">Syllabus: Iqra' 4 (Session ID: 4492)</p></div><span class="text-[10px] bg-nakngaji-light text-nakngaji-primary font-black px-5 py-2 rounded-2xl border border-nakngaji-primary/10">15 OCT 2024</span></div><p class="text-gray-600 leading-relaxed font-bold italic text-xl tracking-tighter">"Ahmad is showing great focus on Mad rules. Successfully completed Page 22. Practice double vowels at home to maintain rhythm."</p><div class="mt-10 flex items-center text-[10px] text-gray-400 font-black border-t border-gray-200 pt-6 uppercase tracking-widest"><i data-lucide="user-check" class="w-4 h-4 mr-2 text-nakngaji-primary"></i> Validated by: Ustazah Zarith</div></div>`;
+            } else {
+                container.innerHTML = `<div class="p-10 border-l-[12px] border-nakngaji-primary bg-gray-50 rounded-[3rem] shadow-sm transition hover:shadow-xl"><div class="flex justify-between items-start mb-6"><div><h4 class="font-black text-gray-900 text-3xl tracking-tighter">Siti Aminah</h4><p class="text-[10px] font-black text-nakngaji-primary uppercase tracking-[0.25em] mt-2">Syllabus: Iqra' 2 (Session ID: 5122)</p></div><span class="text-[10px] bg-nakngaji-light text-nakngaji-primary font-black px-5 py-2 rounded-2xl border border-nakngaji-primary/10">12 OCT 2024</span></div><p class="text-gray-600 leading-relaxed font-bold italic text-xl tracking-tighter">"Aminah has successfully mastered letter recognition for 'Kha'. We will be starting Page 5 next session."</p><div class="mt-10 flex items-center text-[10px] text-gray-400 font-black border-t border-gray-200 pt-6 uppercase tracking-widest"><i data-lucide="user-check" class="w-4 h-4 mr-2 text-nakngaji-primary"></i> Validated by: Ustaz Naqib</div></div>`;
+            }
+            lucide.createIcons();
+        }
+
+        function toggleProfileMenu() { document.getElementById('profile-menu').classList.toggle('hidden'); }
+        function mockSignOut() { if (confirm("Sign out from NakNgaji User Portal?")) window.location.href = 'LoginPage.html'; }
+        
+        function initDashboard() {
+            lucide.createIcons();
+            showView('HomeView', 'nav-home');
         }
     </script>
 </body>
